@@ -1,0 +1,53 @@
+---
+title: "groupProject"
+output: html_document
+date: "2022-11-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Heart Disease and Stroke Analysis
+
+#Group Members
+
+Elli Houtakker, Nolan You, Logan Begin, Sharvil Dace, Thong Nguyen
+
+
+#Communication
+
+In order to communicate efficiently, we have a group chat where we can ask questions or plan our next meetings. We have found that we can all meet on ____, so we will plan on reconvening each week at this time to discuss progress and make sure everything is being completed in a timely manner. We have also created a Github to share our documents between each other. 
+
+
+#Questions of Interest
+
+"The topic selected must be unanimous among group members.
+Each question should be in the form of a research question which may be supported or refuted by the data analysis and typically proposes or predicts a relationship between some variables in the study.
+Note that your project should aim to answer a limited number of questions (preferably one) using data from one or more source.
+Do not try to answer too many questions. Better projects will have a focused set of one or two questions."
+
+1. 
+2. 
+
+#Data
+
+We will be analyzing the data from: 
+
+
+
+#Description of Data
+
+"Who collected the data?
+How were the data collected?
+What are key variables in the data set, what do they measure, and how are they related to your key questions?
+If the data may be thought of as a sample from some larger population, what is that larger population?"
+
+#Graph Description
+
+"Include a description of a graph which will show how the data informs the primary question of interest.
+Describe what variables you will include and what type of graph you will create."
+
+#Other models or methods of inference/prediction
+
+
