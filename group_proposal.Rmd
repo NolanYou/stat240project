@@ -12,12 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #Group Members
 
-Elli Houtakker, Nolan You, Logan Begin, Sharvil Dace, Thong Nguyen
+Elli Houtakker, Nolan You, Logan Begin, Sharvil Dave, Thong Nguyen
 
 
 #Communication
 
-In order to communicate efficiently, we have a group chat where we can ask questions or plan our next meetings. We have found that we can all meet on ____, so we will plan on reconvening each week at this time to discuss progress and make sure everything is being completed in a timely manner. We have also created a Github to share our documents between each other. 
+In order to communicate efficiently, we have a group chat where we can ask questions or plan our next meetings. We have found that we can all meet on ____, so we will plan on reconvening each week at this time to discuss progress and make sure everything is being completed in a timely manner. Our group has set deadlines that we have all agreed upon that we will plan on discussing in our weekly meetings. We have also created a Github to efficiently share our documents between each other. 
 
 
 #Questions of Interest
@@ -32,9 +32,9 @@ Do not try to answer too many questions. Better projects will have a focused set
 
 #Data
 
-We will be analyzing the data from: 
+We will be analyzing the data from: https://catalog.data.gov/dataset/rates-and-trends-in-coronary-heart-disease-and-stroke-mortality-data-among-us-adults-1999-
 
-
+CSV File download can be accessed here: https://data.cdc.gov/api/views/9cr5-2tt7/rows.csv?accessType=DOWNLOAD
 
 #Description of Data
 
