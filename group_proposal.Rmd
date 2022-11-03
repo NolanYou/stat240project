@@ -8,7 +8,7 @@ date: "2022-11-02"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Heart Disease and Stroke Analysis Project Proposal
+### Coronary Heart Disease and Stroke Analysis Project Proposal
 
 **Group Members**
 
@@ -17,18 +17,12 @@ Elli Houtakker, Nolan You, Logan Begin, Sharvil Dave, Thong Nguyen
 
 **Communication**
 
-In order to communicate efficiently, we have a group chat where we can ask questions or plan our next meetings. We have found that we can all meet on ____, so we will plan on reconvening each week at this time to discuss progress and make sure everything is being completed in a timely manner. Our group has set deadlines that we have all agreed upon that we will plan on discussing in our weekly meetings. We have also created a Github to efficiently share our documents between each other. 
-
+In order to communicate efficiently, we have a group chat where we can ask questions or plan our next meetings. We have found that we can all meet on Friday at 2:30, so we will plan on reconvening each week at this time to discuss progress and make sure everything is being completed in a timely manner. Our group has set deadlines that we have all agreed upon that we will plan on discussing in our weekly meetings. We have also created a Github to efficiently share our documents between each other. 
 
 **Questions of Interest**
 
-"The topic selected must be unanimous among group members.
-Each question should be in the form of a research question which may be supported or refuted by the data analysis and typically proposes or predicts a relationship between some variables in the study.
-Note that your project should aim to answer a limited number of questions (preferably one) using data from one or more source.
-Do not try to answer too many questions. Better projects will have a focused set of one or two questions."
-
-1. 
-2. 
+1. Has the prevalence of coronary heart disease and stroke increased over the years?
+2. Does geographical location impact the prevalence of heart disease and stroke? 
 
 **Data**
 
@@ -38,16 +32,27 @@ CSV File download can be accessed here: https://data.cdc.gov/api/views/9cr5-2tt7
 
 **Description of Data**
 
-"Who collected the data?
-How were the data collected?
-What are key variables in the data set, what do they measure, and how are they related to your key questions?
-If the data may be thought of as a sample from some larger population, what is that larger population?"
+The National Vital Statistics System, which is a subbranch of the Center of Disease Control, collected the data by using the estimates of the Bayesian spatiotempotal model. The CDC collects their data from state medical records.
+
+The key variables from that data set that we will be using are LocationAbbr which represents the state in which the data is being sourced from. This will be used to determine the geographically dependencies between the data values. LocationDesc also holds the country for each row of data and will be used in smaller analysis on determining what certain county's have higher prevalence. We will also use the column year to consider the timeline trends and Topic column which classifies whether the row contains coronary heart disease and stroke information. We will keep the Stratification1 column which contains the age range of the data. This purpose of keeping this column to control the variance of data set. These age groups are also incomparable and would cause a bias data set if including 65+ age group, and our analysis will focus on the 35 to 64 age group instead. Lastly, we will use the Data_value column which is the value of those per 100,000 population with either heart disease or stroke, depending on the Topic column. This will be used to complete our analysis on the total population and prevalence of these two diseases. We will ignore the data with the values of Data_Value_Type of "Total percent change" as we will calculate this through our analysis. 
+
+Overall, the larger population in which we are taking a sample from is the entire U.S. population aged 35 to 64, male or female.
+
 
 **Graph Description**
 
-"Include a description of a graph which will show how the data informs the primary question of interest.
-Describe what variables you will include and what type of graph you will create."
+For question 1, we will create a scatter plot of number of strokes/heart disease per 100,000 vs time in years. Each data point will be categorized by each county or state. We will then create a line plot over this data set to show the overall trend overtime and make conclusions based on these trends.
+
+For question 2, we will make a U.S. map graph using the average for each state over the year 1999 to 2018 in order to visualize the statistics or if certain regions are effected differently. This will be alongside a histogram that shows these numbers numerically. The histogram will be average numbers per 100,000 vs state and will show differences in prevalence between state lines. We will either make coronary heart disease separate from stroke or combine them.
+
 
 **Other models or methods of inference/prediction**
+
+Between two states that have similar average prevalence numbers, we will graph the numbers per country to see if there are any trends of the data between suburbs or rural areas. This graph would be between county's versus percentage per population. 
+
+We will include a linear regression line between per capital percentage of cardiovascular disease versus time to show trends of time. 
+
+We could also include a model of prediction if there is some normal or binomial distribution trend. If so, we could find the distribution that best fits (smallest relative error) and make predictions of data through this model.
+
 
 
