@@ -16,20 +16,65 @@ source("../scripts/ggprob.R")
 
 ### Coronary Heart Disease and Stroke
 
-```{r}
-all_data = read_excel("heart_disease_data.xlsx", sheet = 1)
+```{r, include = FALSE}
+#all_data = read_excel("heart_disease_data.xlsx", sheet = 1)
+all_data = read_csv("data.csv")
 head(all_data)
 ```
 
+
+```{r, include = FALSE}
 ##Cleaning Data
-```{r}
 data = all_data %>% 
-  select(Year, LocationAbbr, LocationDesc, Topic, Data_Value, Data_Value_Unit, Stratification1)%>% 
-  filter(Data_Value_Unit != "%", Stratification1 == "Ages 35-64 years") %>% 
-  select(!Data_Value_Unit) %>% 
-  arrange(Year) %>% 
-  rename(year = Year, state = LocationAbbr, county = LocationDesc, age_group = Stratification1, data = Data_Value, type = Topic)
-data
+  select(Year,LocationAbbr, LocationDesc, Topic, Data_Value, Stratification1, Stratification2, Stratification3) %>% 
+  rename(year = Year, state = LocationAbbr, county = LocationDesc, age_group = Stratification1, data = Data_Value, type = Topic, race = Stratification2, sex = Stratification3) %>% 
+  filter(!is.na(data)) %>% 
+  arrange(year)
+
+head(data)
+
+```
+
+#Introduction
+>
+
+
+#Background
+
+>Our inquiry is in what ways do age, race and sex affect the moratality of stroke and heart disease; and moreover, does geographical location impact the prevalence of these cardiovascular diseases?
+
+>In the United States, coronary heart disease is the leading cause of death for both men and women across all racial and ethnic groups and strokes happen every 40 seconds. Thus, analyzing cardiovascular disease is prevalent for many Americans and can impact anyone. Many organizations study and research both the impacts and causation to prevent a continuation of impact on society, but there is overall a lack of funding for many health research facilities. Some of these orgnazations include the Division for Heart Disease and Stroke Prevention, Million Hearts or WISEWOMEN. 
+
+>Cardiovascular diseases is many different heart conditions from coronary artery disease, heart attack, arrhythmia, heart failure, high blood pressure and more. Many of the symptoms for heart disease are unknown to the patient until a larger event happens. Diabetes, obesity, unhealthy diet and physical activity all increase one's risk to heart disease, but it is also inherited as well. 
+
+
+>Our project will use the given data to see the correlations between both stroke and coronary heart disease and characterisitic of patinents as well the geographical location. The National Vital Statistics System, which is a subbranch of the Center of Disease Control and Prevention, collected this data set and can be directly found on the [CDC website](https://chronicdata.cdc.gov/Heart-Disease-Stroke-Prevention/Rates-and-Trends-in-Heart-Disease-and-Stroke-Morta/7b9s-s8ck). This Federal Government organization collects their data from state medical records. The data contains population estimates of stroke and coronary heart disease mortality rates between the years 2000 to 2019. To collect the death rate trends, the data set used a Bayseian spatiotempotal model that was smoothed over time, space and age group. 
+
+
+>The raw data set has more than 5 million rows and 21 columns. We will be interested in 8 of the variables, 6 of which are categorical and two numeric containing the estimated death rate value and year data was collected. The four categorical variables describe the State, County, cardiovascular disease, age range, race and sex. The State and County will be used to determine the geographically dependencies between the data values as well as determining what certain county's have higher prevalence. The age range specifies where the data was collected from female and males aged 35 to 64, those aged 65 and older.  There are also two categorical variables containing race and sex of the data collected. The numeric value contains the death rate of those per 100,000 population who died by heart disease, stroke or heart failture, specified by Topic column. 
+
+
+
+Cites: https://www.cdc.gov/stroke/facts.htm#:~:text=Stroke%20statistics,-In%202020%2C%201&text=Every%2040%20seconds%2C%20someone%20in,minutes%2C%20someone%20dies%20of%20stroke.&text=Every%20year%2C%20more%20than%20795%2C000,are%20first%20or%20new%20strokes.
+https://www.cdc.gov/heartdisease/facts.htm
+https://www.cdc.gov/heartdisease/about.htm
+
+
+
+#Analysis
+>Age
+
+```{r}
 ```
 
 
+
+
+
+#Analysis Summary
+
+
+#Discussion
+
+
+#References
