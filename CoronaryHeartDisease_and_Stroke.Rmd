@@ -31,8 +31,6 @@ data = all_data %>%
   filter(!is.na(data)) %>% 
   arrange(year)
 
-head(data)
-
 ```
 
 #Introduction
@@ -64,11 +62,65 @@ https://www.cdc.gov/heartdisease/about.htm
 #Analysis
 >Age
 
+```{r, include = FALSE}
+data
+age_data= data %>% 
+  filter(type != "Coronary heart disease (CHD)" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
+  filter(race == "Overall", (sex == "Overall")) %>% 
+  select(!race, !sex) %>% 
+  group_by(age_group, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data)) %>% 
+  distinct(total, c,n) %>% 
+  mutate(p = total/n)
+
+age_data
+```
+
 ```{r}
+ggplot(age_data, aes(x = year, y = p, color = age_group, scale = TRUE))+
+  geom_point()+
+  theme_bw()
+
 ```
 
 
+```{r}
+```
 
+>Sex
+
+```{r, include = FALSE}
+
+sex_data= data %>% 
+  filter(type != "Coronary heart disease (CHD)" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
+  select(!race) %>% 
+  group_by(sex, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data)) %>% 
+  distinct(total, c,n) %>% 
+  mutate(p = total/n)
+
+sex_data
+```
+
+>Race
+
+```{r, include = FALSE}
+race_data= data %>% 
+  filter(type != "Coronary heart disease (CHD)" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
+  select(!sex) %>% 
+  group_by(race, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data)) %>% 
+  distinct(total, c,n) %>% 
+  mutate(p = total/n)
+
+race_data
+```
 
 
 #Analysis Summary
