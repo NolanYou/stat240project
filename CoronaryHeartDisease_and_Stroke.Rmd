@@ -1,0 +1,35 @@
+---
+title: "Draft Project"
+output: html_document
+date: "2022-11-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(tidyverse)
+library(lubridate)
+library(readxl)
+source("../scripts/viridis.R")
+source("../scripts/ggprob.R")
+```
+
+
+### Coronary Heart Disease and Stroke
+
+```{r}
+all_data = read_excel("heart_disease_data.xlsx", sheet = 1)
+head(all_data)
+```
+
+##Cleaning Data
+```{r}
+data = all_data %>% 
+  select(Year, LocationAbbr, LocationDesc, Topic, Data_Value, Data_Value_Unit, Stratification1)%>% 
+  filter(Data_Value_Unit != "%", Stratification1 == "Ages 35-64 years") %>% 
+  select(!Data_Value_Unit) %>% 
+  arrange(Year) %>% 
+  rename(year = Year, state = LocationAbbr, county = LocationDesc, age_group = Stratification1, data = Data_Value, type = Topic)
+data
+```
+
+
