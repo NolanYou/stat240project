@@ -1,0 +1,65 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE,
+                      error = TRUE, fig.height = 4)
+library(tidyverse)
+library(broman)
+library(usmap)
+```
+
+
+```{r}
+health_data <- read.csv("data.csv")
+health_data = health_data%>%
+  select("year" = Year, "state" = LocationAbbr, "desc" = LocationDesc, "topic" = Topic, age = Stratification1, race = Stratification2, sex = Stratification3, value = Data_Value, class = Class)
+health_data
+```
+
+```{r}
+health_data%>%group_by(state)%>%summarise(count = n())
+
+```
+
+
+```{r}
+
+
+heart_data = health_data%>%
+  filter(topic == "All heart disease")
+
+stroke_data = health_data%>%
+  filter(topic == "All stroke")
+
+```
+
+```{r}
+states = heart_data%>%select(state)%>%unique()%>%pull()
+
+heart_neutral = heart_data%>%
+  filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
+
+data_2019 = heart_neutral%>%
+  filter(year == 2019)%>%
+  select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+
+data_1999 = heart_neutral%>%
+  filter(year == 1999)%>%
+  select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+
+combined_year_data = data_1999%>%right_join(data_2019, by = "desc")%>%
+  select(state = state.x, desc, val_2019 = value.y, val_1999 = value.x)%>%
+  mutate(diff_20 = val_2019 - val_1999)
+
+map_data_change = combined_year_data%>%
+  select(state, diff_20)%>%
+  group_by(state)%>%
+  summarize(avg_change = mean(diff_20))
+
+plot_usmap(data = map_data_change, values = "avg_change", regions = "states", include = states) + 
+  scale_fill_continuous(
+    low = "blue", high = "red", name = "Average change per county from 1999 to 2019 in the incidence of heart issues", label = scales::comma
+  ) + 
+  theme(panel.background = element_rect(color = "black", fill = "lightblue"))  
+```
+
+
+
