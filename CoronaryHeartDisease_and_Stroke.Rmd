@@ -62,8 +62,6 @@ https://www.cdc.gov/heartdisease/about.htm
 # Analysis
 ## Age
 
-Age 
-
 ```{r, include = FALSE, warning = FALSE, echo = FALSE}
 age_data= data %>% 
   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
@@ -92,35 +90,6 @@ pivot_age = age_sum %>% pivot_wider(names_from = type, values_from = c(c, total,
 ```
 
 ```{r, warning = FALSE, echo = FALSE}
-#Comparing if means of stroke and heart are equal at same age
-
-heart_age1 = age_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years") %>% pull(data)
-stroke_age1 = age_data %>% filter(type == "Stroke" & age_group == "Ages 35-64 years") %>% pull(data)
-t.test(heart_age1, stroke_age1)
-```
-
-
-```{r, warning = FALSE, echo = FALSE}
-#Comparing if data from 1999 to 2009 differed for heart from 2009 to 2019
-
-heart_age1_y1 = age_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & year < 2009) %>% pull(data)
-heart_age1_y2 = age_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & year >= 2009) %>% pull(data)
-t.test(heart_age1_y1, heart_age1_y2)
-
-#can someone help on the analysis of what this mean? I tried comparing many different things between age but the means are so off because age really affects the data. I think the first t test doesn't make much sense but this one seems more fitting in that we can show if there is a difference in age affecting the mortality over the years? We can do the same for stroke as well or also join them (both heart + stroke comparing two 10 year intervals)
-```
-
-
-```{r, warning = FALSE, echo = FALSE}
-#what graph do you guys like more??? 
-
-ggplot(age_data, aes(x = data, color = type)) + 
-  geom_density() +
-  theme_bw()+
-  ggtitle("Density Plot of Mortality Rate", subtitle = "grouped by Cardiovascular type")+
-  xlab("Mortality per 100,000 population")+
-  ylab("Density")
-
 ggplot(age_sum, aes(x = year, y = p, color = type, scale= TRUE))+
   geom_point()+
   geom_smooth(se= FALSE)+
@@ -130,6 +99,66 @@ ggplot(age_sum, aes(x = year, y = p, color = type, scale= TRUE))+
   ylab("Mortality Proportion of Population")+
   xlab("Year")
 
+```
+### Coronary Heart Disease Hypothesis Tests:
+
+- We will assume that there is a universal parameters $\mu_{\text{35-64}}$ and $\mu_{\text{65+}}$  representing the mean of mortality due to coronary heart disease  per year under the experimental conditions aged 35 - 64 and those aged 65 and older, respectively. 
+- Assume that all trials are independent.
+
+Model:
+
+$X_i \sim F_1(\mu_{\text{35-64}}, \sigma_{\text{35-64}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim F_2(\mu_{\text{65+}}, \sigma_{\text{65+}}), \quad i = 1, \ldots, n_2$   
+
+Hypotheses:
+
+$H_0: \mu_{\text{35-64}} = \mu_{\text{65+}}$    
+$H_a: \mu_{\text{35-64}} \neq \mu_{\text{65+}}$
+
+Test statistic:
+
+$t = \frac{\bar{x} - \bar{y}}{\text{SE}(\bar{x} - \bar{y})}$
+
+```{r, warning = FALSE, echo = FALSE}
+
+x = age_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years") %>% pull(data)
+y = age_data %>% filter(type == "CHD" & age_group != "Ages 35-64 years") %>% pull(data)
+t.test(x, y)
+```
+There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is smaller than the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
+
+
+### Stroke Hypothesis Tests:
+
+- We will assume that there is a universal parameters $\mu_{\text{35-64}}$ and $\mu_{\text{65+}}$  representing the mean of mortality due to stroke per year under the experimental conditions aged 35 - 64 and those aged 65 and older, respectively. 
+- Assume that all trials are independent.
+
+Model:
+
+$X_i \sim F_1(\mu_{\text{35-64}}, \sigma_{\text{35-64}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim F_2(\mu_{\text{65+}}, \sigma_{\text{65+}}), \quad i = 1, \ldots, n_2$   
+
+Hypotheses:
+
+$H_0: \mu_{\text{35-64}} = \mu_{\text{65+}}$    
+$H_a: \mu_{\text{35-64}} \neq \mu_{\text{65+}}$
+
+Test statistic
+
+$t = \frac{\bar{x} - \bar{y}}{\text{SE}(\bar{x} - \bar{y})}$
+
+```{r, warning = FALSE, echo = FALSE}
+
+x = age_data %>% filter(type == "Stroke" & age_group == "Ages 35-64 years") %>% pull(data)
+xy = age_data %>% filter(type == "Stroke" & age_group != "Ages 35-64 years") %>% pull(data)
+t.test(x, y)
+```
+There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is smaller than the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
+
+### Age Influence on Heart Disease vs. Stroke:
+```{r, warning = FALSE, echo = FALSE}
+ggplot(age_data, aes(y = data, x = type,  fill = age_group)) +
+  geom_boxplot()
 ```
 
 
@@ -148,41 +177,7 @@ sex_sum = sex_data %>%
     total = sum(data)) %>% 
   distinct(total, c,n) %>% 
   mutate(p = total/n)
-
 ```
-
-```{r}
-#Comparison between heart of women and men aged 35 - 64
-heart_women = sex_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & sex == "Women") %>% pull(data)
-heart_men = sex_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & sex == "Men") %>% pull(data)
-t.test(heart_women, heart_men)
-
-#Comparison between heart of women and men aged 65+
-heart_women = sex_data %>% filter(type == "CHD" & age_group != "Ages 35-64 years" & sex == "Women") %>% pull(data)
-heart_men = sex_data %>% filter(type == "CHD" & age_group != "Ages 35-64 years" & sex == "Men") %>% pull(data)
-t.test(heart_women, heart_men)
-
-#overall women and men heart comparison
-heart_women = sex_data %>% filter(type == "CHD" & sex == "Women") %>% pull(data)
-heart_men = sex_data %>% filter(type == "CHD" & sex == "Men") %>% pull(data)
-t.test(heart_women, heart_men)
-
-#Comparison between stroke of women and men aged 35 - 64
-stroke_women = sex_data %>% filter(type == "Stroke" & age_group == "Ages 35-64 years" & sex == "Women") %>% pull(data)
-stroke_men = sex_data %>% filter(type == "Stroke" & age_group == "Ages 35-64 years" & sex == "Men") %>% pull(data)
-t.test(stroke_women, stroke_men)
-
-#Comparison between stroke of women and men aged 65+
-stroke_women = sex_data %>% filter(type == "Stroke" & age_group != "Ages 35-64 years" & sex == "Women") %>% pull(data)
-stroke_men = sex_data %>% filter(type == "Stroke" & age_group != "Ages 35-64 years" & sex == "Men") %>% pull(data)
-t.test(stroke_women, stroke_men)
-
-#overall women and men stroke comparison
-stroke_women = sex_data %>% filter(type == "Stroke" & sex == "Women") %>% pull(data)
-stroke_men = sex_data %>% filter(type == "Stroke" & sex == "Men") %>% pull(data)
-t.test(stroke_women, stroke_men)
-```
-
 
 ```{r, warning = FALSE, echo = FALSE}
 ggplot(sex_sum, aes(x = year, y = p, color = type, scale= TRUE))+
@@ -193,6 +188,69 @@ ggplot(sex_sum, aes(x = year, y = p, color = type, scale= TRUE))+
   ggtitle("Scatter Plot of Mortality Rate by Sex", subtitle = "grouped by Cardiovascular type")+
    ylab("Mortality Proportion of Population")+
   xlab("Year")
+```
+
+
+### Coronary Heart Disease Hypothesis Tests:
+
+- We will assume that there is a universal parameters $\mu_{\text{female}}$ and $\mu_{\text{male}}$  representing the mean of female and male mortality due to coronary heart disease per year, respectively. 
+- Assume that all trials are independent.
+
+Model:
+
+$X_i \sim F_1(\mu_{\text{female}}, \sigma_{\text{female}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim F_2(\mu_{\text{male}}, \sigma_{\text{male}}), \quad i = 1, \ldots, n_2$   
+
+Hypotheses:
+
+$H_0: \mu_{\text{female}} = \mu_{\text{male}}$    
+$H_a: \mu_{\text{female}} \neq \mu_{\text{male}}$
+
+Test statistic:
+
+$t = \frac{\bar{x} - \bar{y}}{\text{SE}(\bar{x} - \bar{y})}$
+
+```{r, warning = FALSE, echo = FALSE}
+
+x = sex_data %>% filter(type == "CHD" & sex == "Women") %>% pull(data)
+y = sex_data %>% filter(type == "CHD" & sex == "Men") %>% pull(data)
+t.test(x, y)
+```
+***There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is smaller than the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).**** EDIT
+
+
+### Stroke Hypothesis Tests:
+
+- We will assume the same assumptions and definition of the $\mu_{\text{female}}$ and $\mu_{\text{male}}$ parameters as the hypothesis above.
+
+Model:
+
+$X_i \sim F_1(\mu_{\text{female}}, \sigma_{\text{female}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim F_2(\mu_{\text{male}}, \sigma_{\text{male}}), \quad i = 1, \ldots, n_2$   
+
+Hypotheses:
+
+$H_0: \mu_{\text{female}} = \mu_{\text{male}}$    
+$H_a: \mu_{\text{female}} \neq \mu_{\text{male}}$
+
+Test statistic
+
+$t = \frac{\bar{x} - \bar{y}}{\text{SE}(\bar{x} - \bar{y})}$
+
+```{r, warning = FALSE, echo = FALSE}
+
+x = sex_data %>% filter(type == "Stroke" & sex == "Women") %>% pull(data)
+y = sex_data %>% filter(type == "Stroke" & sex == "Men") %>% pull(data)
+t.test(x, y)
+```
+
+**** There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is smaller than the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
+**** EDIT
+
+### Sex Influence on Heart Disease vs. Stroke:
+```{r, warning = FALSE, echo = FALSE}
+ggplot(sex_data, aes(y = data, x = type,  fill = sex)) +
+  geom_boxplot()
 ```
 
 
@@ -214,28 +272,6 @@ race_sum = race_data %>%
 race_sum
 ```
 
-```{r}
-#comparison of the mean distribution overall vs. one 
-race_data
-stroke_all = race_data %>% filter(type == "Stroke") %>% pull(data)
-stroke_hispanic = race_data %>% filter(type == "Stroke" & race == "Hispanic") %>% pull(data)
-t.test(stroke_all, stroke_hispanic)
-
-stroke_black = race_data %>% filter(type == "Stroke" & race == "Black (Non-Hispanic)") %>% pull(data)
-t.test(stroke_all, stroke_black)
-
-
-stroke_white = race_data %>% filter(type == "Stroke" & race == "White") %>% pull(data)
-t.test(stroke_all, stroke_white)
-
-stroke_asian = race_data %>% filter(type == "Stroke" & race == "Asian/Pacific Islander") %>% pull(data)
-t.test(stroke_all, stroke_asian)
-
-stroke_amer_indian = race_data %>% filter(type == "Stroke" & race == "American Indian/Alaska Native") %>% pull(data)
-t.test(stroke_all, stroke_amer_indian)
-```
-
-
 ```{r, warning = FALSE, echo = FALSE}
 mean= race_data %>% summarize(mean = mean(data)) %>% pull(mean)
 ggplot(race_sum, aes(x = year, y = mean, color = type, scale= TRUE))+
@@ -249,6 +285,68 @@ ggplot(race_sum, aes(x = year, y = mean, color = type, scale= TRUE))+
   xlab("Year")
 ```
 
+### Coronary Heart Disease Hypothesis Tests:
+
+- We will assume that there is a universal parameters $\mu_{\text{all}}$ and $\mu_{\text{black}}$ representing the mean mortality due to coronary heart disease per year over all races, sex, and age, and the mean mortality due to coronary heart disease of Asians/Pacific Islanders, respectively. 
+- Assume that all trials are independent.
+
+Model:
+
+$X_i \sim F_1(\mu_{\text{all}}, \sigma_{\text{all}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim F_2(\mu_{\text{black}}, \sigma_{\text{black}}), \quad i = 1, \ldots, n_2$   
+
+Hypotheses:
+
+$H_0: \mu_{\text{all}} = \mu_{\text{black}}$    
+$H_a: \mu_{\text{all}} \neq \mu_{\text{black}}$
+
+Test statistic:
+
+$t = \frac{\bar{x} - \bar{y}}{\text{SE}(\bar{x} - \bar{y})}$
+
+```{r, warning = FALSE, echo = FALSE}
+x = race_data %>% filter(type == "CHD") %>% pull(data)
+y = race_data %>% filter(type == "CHD" & race == "Black (Non-Hispanic)") %>% pull(data)
+t.test(x, y)
+```
+***There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is smaller than the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).**** EDIT
+
+
+### Stroke Hypothesis Tests:
+
+- We will assume that there is a universal parameters $\mu_{\text{all}}$ and $\mu_{\text{asian}}$ representing the mean mortality due to stroke per year over all races, sex, and age, and the mean mortality due to stroke of Blacks(non Hispanics), respectively. 
+- Assume that all trials are independent.
+
+Model:
+
+$X_i \sim F_1(\mu_{\text{all}}, \sigma_{\text{all}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim F_2(\mu_{\text{asian}}, \sigma_{\text{asian}}), \quad i = 1, \ldots, n_2$   
+
+Hypotheses:
+
+$H_0: \mu_{\text{all}} = \mu_{\text{asian}}$    
+$H_a: \mu_{\text{all}} \neq \mu_{\text{asian}}$
+
+Test statistic:
+
+$t = \frac{\bar{x} - \bar{y}}{\text{SE}(\bar{x} - \bar{y})}$
+
+```{r, warning = FALSE, echo = FALSE}
+
+x = race_data %>% filter(type == "Stroke") %>% pull(data)
+y = race_data %>% filter(type == "Stroke" & race == "Asian/Pacific Islander") %>% pull(data)
+t.test(x, y)
+```
+
+**** There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is smaller than the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
+**** EDIT
+
+
+### Race Influence on Heart Disease vs. Stroke:
+```{r, warning = FALSE, echo = FALSE}
+ggplot(race_data, aes(y = data, x = type,  fill = race)) +
+  geom_boxplot()
+```
 
 ## Geography
 

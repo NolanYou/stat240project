@@ -1,0 +1,93 @@
+---
+title: "Coronary Heart Disease and Stroke Mortality Outline"
+output: html_document
+date: "2022-11-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## U.S. Coronary Heart Disease and Stroke Mortality Outline
+
+# Introduction
+
+# Background
+
+Our question is whether age, race, and gender influence stroke and heart disease mortality, and whether geographical location influences the prevalence of these cardiovascular diseases.
+
+Coronary heart disease is the leading cause of death in the United States for both men and women of all racial and ethnic groups, and a stroke occurs every 40 seconds. As a result, analyzing cardiovascular disease is common for many Americans and can affect anyone. Many organizations study and research both the effects and the causes in order to prevent the impact on society from continuing, but there is a general lack of funding for many health research facilities. The Division for Heart Disease and Stroke Prevention, Million Hearts, and WISEWOMEN are a few of these organizations.
+
+Cardiovascular disease encompasses a wide range of heart conditions such as coronary artery disease, heart attack, arrhythmia, heart failure, high blood pressure, and others. Many of the symptoms of heart disease are not noticed by the patient until a major event occurs. Diabetes, obesity, an unhealthy diet, and lack of physical activity all increase one's risk of heart disease, but it can also be inherited.
+
+# Data
+
+Our project will use the provided data to examine the relationships between stroke and coronary heart disease, as well as patient characteristics and geographic location. This data set was collected by the National Vital Statistics System, a division of the Centers for Disease Control and Prevention, and can be found directly on the [CDC website](https://chronicdata.cdc.gov/Heart-Disease-Stroke-Prevention/Rates-and-Trends-in-Heart-Disease-and-Stroke-Morta/7b9s-s8ck). This Federal Government agency obtains its information from state medical records. The data set includes population estimates of stroke and coronary heart disease mortality rates from 1999 to 2019. The data set used a Bayesian spatiotemporal model that was smoothed over time, space, and age group to collect death rate trends.
+
+
+There are over 5 million rows and 21 columns in the raw data set. We will be interested in eight variables, six of which are categorical and two of which are numerical and contain the estimated death rate value and the year data was collected. The four categorical variables are State, County, cardiovascular disease, age range, race, and gender. The state and county will be used to determine the geographical dependencies of the data values, as well as which counties have a higher prevalence. The age range indicates where the data was collected from females and males aged 35 to 64, as well as those aged 65 and older. There are also two categorical variables that contain the data's race and gender. The numeric value represents the death rate per 100,000 people from heart disease, stroke, or heart failure, as specified by the Topic column.
+
+# Methods
+
+```{r, include = FALSE, warning = FALSE, echo = FALSE}
+#Age
+age_data= data %>% 
+  filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
+  filter(race == "Overall", (sex == "Overall")) %>% 
+  select(year, state, county, type, data, age_group)
+age_data
+
+age_sum = age_data %>% 
+  group_by(age_group, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data)) %>% 
+  distinct(total, c,n) %>% 
+  mutate(p = total/n) 
+
+#Sex
+sex_data= data %>% 
+  filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
+  select(!race)
+sex_data
+
+sex_sum = sex_data %>% 
+  group_by(sex, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data)) %>% 
+  distinct(total, c,n) %>% 
+  mutate(p = total/n)
+
+#Race
+race_data= data %>% 
+  filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
+  select(!sex)
+
+race_sum = race_data %>% 
+  group_by(race, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data),
+    mean = mean(data)) %>% 
+  distinct(total, c,n, mean) %>% 
+  mutate(p = total/n)
+race_sum
+```
+
+1. For the first question of interest, we will be analyzing the influence that race, sex and age have on both stroke and coronary heart disease deaths in the United States. We will be using two sample mean hypothesis testing and comparing between the two groups of both heart disease and stroke separately. For example, we will test the mean mortality rate over the years from those who died of heart disease aged 35 to 64 compared to those under similar conditions but aged 65 and older. For the difference in race, we will test against the mean of all the races combined to a set of one or two races to test if there is an influence or trend. 
+
+Additionally, we will include a scatter plot graph of proportion of the population vs time for each of the three categories (race, sex, age). This will show if there was an increase or decrease in prevalence as well as a comparison between the tested variables. 
+
+We are expecting that age will have a large effect on the mortality rate and cause an increase of numbers. Women might also have higher rates as from previous knowledge, they tend to have higher cardiovascular diseases. 
+
+The last thing that I could add is an analysis of whether coronary heart disease had a larger or smaller influence from race, sex, or age in comparison to the influence they have on stroke. This could be shown through a two variable box plot graph of data vs. type of cardiovascular disease and display the age groups by color. 
+
+2. 
+
+
+# Discussion
+
+
+# Summary/ Conclusion
+(leave blank)
