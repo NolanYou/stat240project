@@ -16,20 +16,246 @@ source("../scripts/ggprob.R")
 
 ### Coronary Heart Disease and Stroke
 
-```{r}
-all_data = read_excel("heart_disease_data.xlsx", sheet = 1)
+```{r, include = FALSE}
+#all_data = read_excel("heart_disease_data.xlsx", sheet = 1)
+all_data = read_csv("data.csv")
 head(all_data)
 ```
 
+
+```{r, include = FALSE}
 ##Cleaning Data
-```{r}
 data = all_data %>% 
-  select(Year, LocationAbbr, LocationDesc, Topic, Data_Value, Data_Value_Unit, Stratification1)%>% 
-  filter(Data_Value_Unit != "%", Stratification1 == "Ages 35-64 years") %>% 
-  select(!Data_Value_Unit) %>% 
-  arrange(Year) %>% 
-  rename(year = Year, state = LocationAbbr, county = LocationDesc, age_group = Stratification1, data = Data_Value, type = Topic)
-data
+  select(Year,LocationAbbr, LocationDesc, Topic, Data_Value, Stratification1, Stratification2, Stratification3) %>% 
+  rename(year = Year, state = LocationAbbr, county = LocationDesc, age_group = Stratification1, data = Data_Value, type = Topic, race = Stratification2, sex = Stratification3) %>% 
+  filter(!is.na(data)) %>% 
+  arrange(year) %>% 
+  mutate( type = recode(type, "Coronary heart disease (CHD)" = "CHD", "All stroke" = "Stroke"))
 ```
 
 
+# Introduction
+
+
+
+# Background
+
+Our question is whether age, race, and gender influence stroke and heart disease mortality, and whether geographical location influences the prevalence of these cardiovascular diseases.
+
+Coronary heart disease is the leading cause of death in the United States for both men and women of all racial and ethnic groups, and a stroke occurs every 40 seconds. As a result, analyzing cardiovascular disease is common for many Americans and can affect anyone. Many organizations study and research both the effects and the causes in order to prevent the impact on society from continuing, but there is a general lack of funding for many health research facilities. The Division for Heart Disease and Stroke Prevention, Million Hearts, and WISEWOMEN are a few of these organizations.
+
+Cardiovascular disease encompasses a wide range of heart conditions such as coronary artery disease, heart attack, arrhythmia, heart failure, high blood pressure, and others. Many of the symptoms of heart disease are not noticed by the patient until a major event occurs. Diabetes, obesity, an unhealthy diet, and lack of physical activity all increase one's risk of heart disease, but it can also be inherited.
+
+
+Our project will use the provided data to examine the relationships between stroke and coronary heart disease, as well as patient characteristics and geographic location. This data set was collected by the National Vital Statistics System, a division of the Centers for Disease Control and Prevention, and can be found directly on the [CDC website](https://chronicdata.cdc.gov/Heart-Disease-Stroke-Prevention/Rates-and-Trends-in-Heart-Disease-and-Stroke-Morta/7b9s-s8ck). This Federal Government agency obtains its information from state medical records. The data set includes population estimates of stroke and coronary heart disease mortality rates from 1999 to 2019. The data set used a Bayesian spatiotemporal model that was smoothed over time, space, and age group to collect death rate trends.
+
+
+There are over 5 million rows and 21 columns in the raw data set. We will be interested in eight variables, six of which are categorical and two of which are numerical and contain the estimated death rate value and the year data was collected. The four categorical variables are State, County, cardiovascular disease, age range, race, and gender. The state and county will be used to determine the geographical dependencies of the data values, as well as which counties have a higher prevalence. The age range indicates where the data was collected from females and males aged 35 to 64, as well as those aged 65 and older. There are also two categorical variables that contain the data's race and gender. The numeric value represents the death rate per 100,000 people from heart disease, stroke, or heart failure, as specified by the Topic column.
+
+
+Cites: https://www.cdc.gov/stroke/facts.htm#:~:text=Stroke%20statistics,-In%202020%2C%201&text=Every%2040%20seconds%2C%20someone%20in,minutes%2C%20someone%20dies%20of%20stroke.&text=Every%20year%2C%20more%20than%20795%2C000,are%20first%20or%20new%20strokes.
+https://www.cdc.gov/heartdisease/facts.htm
+https://www.cdc.gov/heartdisease/about.htm
+
+
+
+# Analysis
+## Age
+
+Age 
+
+```{r, include = FALSE, warning = FALSE, echo = FALSE}
+age_data= data %>% 
+  filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
+  filter(race == "Overall", (sex == "Overall")) %>% 
+  select(year, state, county, type, data, age_group)
+age_data
+
+age_sum = age_data %>% 
+  group_by(age_group, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data)) %>% 
+  distinct(total, c,n) %>% 
+  mutate(p = total/n) 
+
+pivot_age = age_sum %>% pivot_wider(names_from = type, values_from = c(c, total, n, p)) %>% rename(
+  n_heart = "n_CHD", 
+  p_heart = "p_CHD", 
+  p_stroke = "p_Stroke", 
+  n_stroke = "n_Stroke",
+  c_stroke = "c_Stroke", 
+  c_heart = "c_CHD",
+  total_stroke = "total_Stroke", 
+  total_heart = "total_CHD"
+)
+```
+
+```{r, warning = FALSE, echo = FALSE}
+#Comparing if means of stroke and heart are equal at same age
+
+heart_age1 = age_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years") %>% pull(data)
+stroke_age1 = age_data %>% filter(type == "Stroke" & age_group == "Ages 35-64 years") %>% pull(data)
+t.test(heart_age1, stroke_age1)
+```
+
+
+```{r, warning = FALSE, echo = FALSE}
+#Comparing if data from 1999 to 2009 differed for heart from 2009 to 2019
+
+heart_age1_y1 = age_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & year < 2009) %>% pull(data)
+heart_age1_y2 = age_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & year >= 2009) %>% pull(data)
+t.test(heart_age1_y1, heart_age1_y2)
+
+#can someone help on the analysis of what this mean? I tried comparing many different things between age but the means are so off because age really affects the data. I think the first t test doesn't make much sense but this one seems more fitting in that we can show if there is a difference in age affecting the mortality over the years? We can do the same for stroke as well or also join them (both heart + stroke comparing two 10 year intervals)
+```
+
+
+```{r, warning = FALSE, echo = FALSE}
+#what graph do you guys like more??? 
+
+ggplot(age_data, aes(x = data, color = type)) + 
+  geom_density() +
+  theme_bw()+
+  ggtitle("Density Plot of Mortality Rate", subtitle = "grouped by Cardiovascular type")+
+  xlab("Mortality per 100,000 population")+
+  ylab("Density")
+
+ggplot(age_sum, aes(x = year, y = p, color = type, scale= TRUE))+
+  geom_point()+
+  geom_smooth(se= FALSE)+
+  facet_wrap(~age_group)+
+  theme_bw()+
+  ggtitle("Scatter Plot of Mortality Rate by Age", subtitle = "grouped by Cardiovascular type")+
+  ylab("Mortality Proportion of Population")+
+  xlab("Year")
+
+```
+
+
+## Sex
+
+```{r, include = FALSE}
+sex_data= data %>% 
+  filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
+  select(!race)
+sex_data
+
+sex_sum = sex_data %>% 
+  group_by(sex, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data)) %>% 
+  distinct(total, c,n) %>% 
+  mutate(p = total/n)
+
+```
+
+```{r}
+#Comparison between heart of women and men aged 35 - 64
+heart_women = sex_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & sex == "Women") %>% pull(data)
+heart_men = sex_data %>% filter(type == "CHD" & age_group == "Ages 35-64 years" & sex == "Men") %>% pull(data)
+t.test(heart_women, heart_men)
+
+#Comparison between heart of women and men aged 65+
+heart_women = sex_data %>% filter(type == "CHD" & age_group != "Ages 35-64 years" & sex == "Women") %>% pull(data)
+heart_men = sex_data %>% filter(type == "CHD" & age_group != "Ages 35-64 years" & sex == "Men") %>% pull(data)
+t.test(heart_women, heart_men)
+
+#overall women and men heart comparison
+heart_women = sex_data %>% filter(type == "CHD" & sex == "Women") %>% pull(data)
+heart_men = sex_data %>% filter(type == "CHD" & sex == "Men") %>% pull(data)
+t.test(heart_women, heart_men)
+
+#Comparison between stroke of women and men aged 35 - 64
+stroke_women = sex_data %>% filter(type == "Stroke" & age_group == "Ages 35-64 years" & sex == "Women") %>% pull(data)
+stroke_men = sex_data %>% filter(type == "Stroke" & age_group == "Ages 35-64 years" & sex == "Men") %>% pull(data)
+t.test(stroke_women, stroke_men)
+
+#Comparison between stroke of women and men aged 65+
+stroke_women = sex_data %>% filter(type == "Stroke" & age_group != "Ages 35-64 years" & sex == "Women") %>% pull(data)
+stroke_men = sex_data %>% filter(type == "Stroke" & age_group != "Ages 35-64 years" & sex == "Men") %>% pull(data)
+t.test(stroke_women, stroke_men)
+
+#overall women and men stroke comparison
+stroke_women = sex_data %>% filter(type == "Stroke" & sex == "Women") %>% pull(data)
+stroke_men = sex_data %>% filter(type == "Stroke" & sex == "Men") %>% pull(data)
+t.test(stroke_women, stroke_men)
+```
+
+
+```{r, warning = FALSE, echo = FALSE}
+ggplot(sex_sum, aes(x = year, y = p, color = type, scale= TRUE))+
+  geom_point()+
+  geom_smooth(se= FALSE)+
+  facet_wrap(~sex)+
+  theme_bw()+
+  ggtitle("Scatter Plot of Mortality Rate by Sex", subtitle = "grouped by Cardiovascular type")+
+   ylab("Mortality Proportion of Population")+
+  xlab("Year")
+```
+
+
+## Race
+
+```{r, include = FALSE, warning = FALSE, echo = FALSE}
+race_data= data %>% 
+  filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
+  select(!sex)
+
+race_sum = race_data %>% 
+  group_by(race, year, type) %>% 
+  mutate(c = n(),
+         n = c*100000,
+    total = sum(data),
+    mean = mean(data)) %>% 
+  distinct(total, c,n, mean) %>% 
+  mutate(p = total/n)
+race_sum
+```
+
+```{r}
+#comparison of the mean distribution overall vs. one 
+race_data
+stroke_all = race_data %>% filter(type == "Stroke") %>% pull(data)
+stroke_hispanic = race_data %>% filter(type == "Stroke" & race == "Hispanic") %>% pull(data)
+t.test(stroke_all, stroke_hispanic)
+
+stroke_black = race_data %>% filter(type == "Stroke" & race == "Black (Non-Hispanic)") %>% pull(data)
+t.test(stroke_all, stroke_black)
+
+
+stroke_white = race_data %>% filter(type == "Stroke" & race == "White") %>% pull(data)
+t.test(stroke_all, stroke_white)
+
+stroke_asian = race_data %>% filter(type == "Stroke" & race == "Asian/Pacific Islander") %>% pull(data)
+t.test(stroke_all, stroke_asian)
+
+stroke_amer_indian = race_data %>% filter(type == "Stroke" & race == "American Indian/Alaska Native") %>% pull(data)
+t.test(stroke_all, stroke_amer_indian)
+```
+
+
+```{r, warning = FALSE, echo = FALSE}
+mean= race_data %>% summarize(mean = mean(data)) %>% pull(mean)
+ggplot(race_sum, aes(x = year, y = mean, color = type, scale= TRUE))+
+  geom_point()+
+  geom_smooth(se= FALSE)+
+  facet_wrap(~race)+
+  theme_bw()+
+  geom_hline(yintercept =mean, linetype = "dashed", color = "red")+
+  ggtitle("Scatter Plot of Mortality Rate by Race", subtitle = "grouped by Cardiovascular type")+
+  ylab("Mortality Proportion of population")+
+  xlab("Year")
+```
+
+
+## Geography
+
+# Analysis Summary
+
+
+# Discussion
+
+
+# References
