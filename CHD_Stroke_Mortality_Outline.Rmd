@@ -5,12 +5,16 @@ date: "2022-11-15"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+
 ```
+>Group 317B
 
 ## U.S. Coronary Heart Disease and Stroke Mortality Outline
 
 # Introduction
+Some of the leading causes of death in the United States are strokes and heart diseases. Medical data analysis is necessary to study in order to figure out how to better treat patients, which is necessary to save lives. In this project we are analyzing a collection of data about heart disease and stroke deaths in order to analyze roots and causes. This data is sourced directly from the CDC, which in turn is sourced by state governments. Through this analysis we will examine factors including sex, age, race, and state location in order to evaluate how they affect the prevalence of strokes and heart diseases.
 
 # Background
 
@@ -31,6 +35,14 @@ There are over 5 million rows and 21 columns in the raw data set. We will be int
 
 ```{r, include = FALSE, warning = FALSE, echo = FALSE}
 #Age
+all_data = read_csv("data.csv")
+
+data = all_data %>% 
+  select(Year,LocationAbbr, LocationDesc, Topic, Data_Value, Stratification1, Stratification2, Stratification3) %>% 
+  rename(year = Year, state = LocationAbbr, county = LocationDesc, age_group = Stratification1, data = Data_Value, type = Topic, race = Stratification2, sex = Stratification3) %>% 
+  filter(!is.na(data)) %>% 
+  arrange(year)
+
 age_data= data %>% 
   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
   filter(race == "Overall", (sex == "Overall")) %>% 
@@ -83,11 +95,15 @@ We are expecting that age will have a large effect on the mortality rate and cau
 
 The last thing that I could add is an analysis of whether coronary heart disease had a larger or smaller influence from race, sex, or age in comparison to the influence they have on stroke. This could be shown through a two variable box plot graph of data vs. type of cardiovascular disease and display the age groups by color. 
 
-2. 
+2. For the second question of interest, we will analyze the influence that geography has on the change in prevalence of stroke and coronary heart disease has over time. We will be graphing the average change over the past 20 years in the per-capita population for stroke deaths and mortality deaths separately onto a map of the United States to see if geographic location plays a role at all in the change. Additionally, we will use a histogram in order to better evaluate the distribution of the change of stroke deaths and mortality deaths over time. 
+
+We are not expecting state location to play a significant role in the difference between per-capita strokes and heart problems.
 
 
 # Discussion
+We'll discuss possible causes of various factors impacting rates of stroke and heart disease deaths. One difficult part of the results will be identifying causes vs associations. When talking about the hypothesis test results, we'll need to figure out if whether or not the factors of sex, age, and race affect the results if there appears to be a difference between the two variables. That means eliminating confounding variables. Comparing races will also be rather difficult, as there are multiple data sets so we would need to compare to the aggregate population as opposed to simply contrasting with another. 
 
+We will also discuss the importance of the graphs and how they relate to our findings, noting distributions and outliers.
 
 # Summary/ Conclusion
 (leave blank)
