@@ -55,8 +55,37 @@ map_data_change = combined_year_data%>%
   summarize(avg_change = mean(diff_20))
 
 plot_usmap(data = map_data_change, values = "avg_change", regions = "states", include = states) + 
-  scale_fill_continuous(
-    low = "blue", high = "red", name = "Average change per county from 1999 to 2019 in the incidence of heart issues", label = scales::comma
+  scale_fill_viridis_c(
+    name = "Average change per county from 1999 to 2019 in the incidence of heart issues", label = scales::comma
+  ) + 
+  theme(panel.background = element_rect(color = "black", fill = "lightblue"))  
+```
+```{r}
+states = stroke_data%>%select(state)%>%unique()%>%pull()
+
+stroke_neutral = stroke_data%>%
+  filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
+
+stroke_data_2019 = stroke_neutral%>%
+  filter(year == 2019)%>%
+  select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+
+stroke_data_1999 = stroke_neutral%>%
+  filter(year == 1999)%>%
+  select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+
+stroke_combined_year_data = stroke_data_1999%>%right_join(stroke_data_2019, by = "desc")%>%
+  select(state = state.x, desc, val_2019 = value.y, val_1999 = value.x)%>%
+  mutate(diff_20 = val_2019 - val_1999)
+
+stroke_map_data_change = stroke_combined_year_data%>%
+  select(state, diff_20)%>%
+  group_by(state)%>%
+  summarize(avg_change = mean(diff_20))
+
+plot_usmap(data = stroke_map_data_change, values = "avg_change", regions = "states", include = states) + 
+  scale_fill_viridis_c(
+    name = "Average change per county from 1999 to 2019 in the incidence of stroke issues", label = scales::comma
   ) + 
   theme(panel.background = element_rect(color = "black", fill = "lightblue"))  
 ```
