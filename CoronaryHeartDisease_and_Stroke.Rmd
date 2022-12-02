@@ -393,7 +393,7 @@ stroke_data = health_data%>%
   filter(topic == "All stroke")
 ```
 
-```{r, include = FALSE, echo = TRUE, warning = FALSE}
+```{r, include = TRUE, echo = FALSE, warning = FALSE}
 states = heart_data%>%select(state)%>%unique()%>%pull()
 heart_neutral = heart_data%>%
   filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
@@ -417,7 +417,7 @@ plot_usmap(data = map_data_change, values = "avg_change", regions = "states", in
   theme(panel.background = element_rect(color = "black", fill = "lightblue"))  
 ```
 
-```{r, include = FALSE, echo = TRUE, warning = FALSE}
+```{r, include = TRUE, echo = FALSE, warning = FALSE}
 states = stroke_data%>%select(state)%>%unique()%>%pull()
 stroke_neutral = stroke_data%>%
   filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
