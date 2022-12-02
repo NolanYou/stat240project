@@ -39,9 +39,9 @@ Some of the leading causes of death in the United States are strokes and heart d
 
 ## Background
 
-Coronary heart disease is the leading cause of death in the United States for both men and women of all racial and ethnic groups, and a stroke occurs every 40 seconds. As a result, analyzing cardiovascular disease is common for many Americans and can affect anyone. Many organizations study and research both the effects and the causes in order to prevent the impact on society from continuing, but there is a general lack of funding for many health research facilities. The Division for Heart Disease and Stroke Prevention, Million Hearts, and WISEWOMEN are a few of these organizations.
+Coronary heart disease is the leading cause of death in the United States for both men and women of all racial and ethnic groups, and a stroke occurs every 40 seconds^[https://www.cdc.gov/stroke/facts.htm#:~:text=Stroke%20statistics,-In%202020%2C%201&text=Every%2040%20seconds%2C%20someone%20in,minutes%2C%20someone%20dies%20of%20stroke.&text=Every%20year%2C%20more%20than%20795%2C000,are%20first%20or%20new%20strokes.]. As a result, analyzing cardiovascular disease is common for many Americans and can affect anyone. Many organizations study and research both the effects and the causes in order to prevent the impact on society from continuing, but there is a general lack of funding for many health research facilities. The Division for Heart Disease and Stroke Prevention, Million Hearts, and WISEWOMEN are a few of these organizations^[https://www.cdc.gov/heartdisease/about.htm].
 
-Cardiovascular disease encompasses a wide range of heart conditions such as coronary artery disease, heart attack, arrhythmia, heart failure, high blood pressure, and others. Many of the symptoms of heart disease are not noticed by the patient until a major event occurs. Diabetes, obesity, an unhealthy diet, and lack of physical activity all increase one's risk of heart disease, but it can also be inherited.
+Cardiovascular disease encompasses a wide range of heart conditions such as coronary artery disease, heart attack, arrhythmia, heart failure, high blood pressure, and others. Many of the symptoms of heart disease are not noticed by the patient until a major event occurs. Diabetes, obesity, an unhealthy diet, and lack of physical activity all increase one's risk of heart disease, but it can also be inherited^[https://www.cdc.gov/heartdisease/facts.htm].
 
 
 Our project will use the provided data to examine the relationships between stroke and coronary heart disease, as well as patient characteristics and geographic location. This data set was collected by the National Vital Statistics System, a division of the Centers for Disease Control and Prevention, and can be found directly on the [CDC website](https://chronicdata.cdc.gov/Heart-Disease-Stroke-Prevention/Rates-and-Trends-in-Heart-Disease-and-Stroke-Morta/7b9s-s8ck). This Federal Government agency obtains its information from state medical records. The data set includes population estimates of stroke and coronary heart disease mortality rates from 1999 to 2019. The data set used a Bayesian spatiotemporal model that was smoothed over time, space, and age group to collect death rate trends.
@@ -54,16 +54,36 @@ RQ #1: Does age, race, and gender influence stroke and heart disease mortality?
 RQ #2: Does geographical location influences the prevalence of these cardiovascular diseases?
 
 
-Cites: https://www.cdc.gov/stroke/facts.htm#:~:text=Stroke%20statistics,-In%202020%2C%201&text=Every%2040%20seconds%2C%20someone%20in,minutes%2C%20someone%20dies%20of%20stroke.&text=Every%20year%2C%20more%20than%20795%2C000,are%20first%20or%20new%20strokes.
-https://www.cdc.gov/heartdisease/facts.htm
-https://www.cdc.gov/heartdisease/about.htm
-
-
 
 ## Analysis
 ### Age
 
-In order to answer RQ1, we will first discuss the influence age has on the mortality rate. The two age groups obtained from the data set are those aged from 35 - 64 and those aged 65 and older. After filtering the data to obtain only the age influenced rows (code found in reference 1), we conduct the following hypothesis test testing whether the average mortality rate are the same between the two age groups or if they do not equal each other. We test the hypothesis for each cause of death separately to control the influence on death.
+In order to answer RQ1, we will first discuss the influence age has on the mortality rate. The two age groups obtained from the data set are those aged from 35 - 64 and those aged 65 and older. After filtering the data to obtain only the age influenced rows^[```{r, warning = FALSE, echo = FALSE}
+# age_data= data %>% 
+#   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
+#   filter(race == "Overall", (sex == "Overall")) %>% 
+#   select(year, state, county, type, data, age_group)
+# age_data
+# 
+# age_sum = age_data %>% 
+#   group_by(age_group, year, type) %>% 
+#   mutate(c = n(),
+#          n = c*100000,
+#     total = sum(data)) %>% 
+#   distinct(total, c,n) %>% 
+#   mutate(p = total/n) 
+# 
+# pivot_age = age_sum %>% pivot_wider(names_from = type, values_from = c(c, total, n, p)) %>% rename(
+#   n_heart = "n_CHD", 
+#   p_heart = "p_CHD", 
+#   p_stroke = "p_Stroke", 
+#   n_stroke = "n_Stroke",
+#   c_stroke = "c_Stroke", 
+#   c_heart = "c_CHD",
+#   total_stroke = "total_Stroke", 
+#   total_heart = "total_CHD"
+# )
+```], we conduct the following hypothesis test testing whether the average mortality rate are the same between the two age groups or if they do not equal each other. We test the hypothesis for each cause of death separately to control the influence on death.
 
 ```{r, include = FALSE, warning = FALSE, echo = FALSE}
 age_data= data %>% 
@@ -177,7 +197,20 @@ ggplot(age_data, aes(y = data, x = type,  fill = age_group)) +
 
 ### Sex
 
-We will also look at the influence sex has on each cause of death and their corresponding mortality rate to asnwer RQ1. The data was filtered to obtain only the sex influenced rows (code found in reference 2), we conduct the following hypothesis test testing whether the average mortality rate are the same between the two sexes (male and female) or if they do not equal each other. We test the hypothesis for each cause of death separately to control the influence on death.
+We will also look at the influence sex has on each cause of death and their corresponding mortality rate to asnwer RQ1. The data was filtered to obtain only the sex influenced rows^[```{r, echo = FALSE, warning = FALSE}
+# sex_data= data %>% 
+#   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
+#   select(!race)
+# sex_data
+# 
+# sex_sum = sex_data %>% 
+#   group_by(sex, year, type) %>% 
+#   mutate(c = n(),
+#          n = c*100000,
+#     total = sum(data)) %>% 
+#   distinct(total, c,n) %>% 
+#   mutate(p = total/n)
+```], we conduct the following hypothesis test testing whether the average mortality rate are the same between the two sexes (male and female) or if they do not equal each other. We test the hypothesis for each cause of death separately to control the influence on death.
 
 ```{r, include = FALSE, warning = FALSE}
 sex_data= data %>% 
@@ -278,7 +311,21 @@ ggplot(sex_data, aes(y = data, x = type,  fill = sex)) +
 
 ### Race
 
-Race may also have an influence on the mortality rate between coronoary heart disease and stroke. As asked in RQ1, we will test whether there is any difference between a specific race and the overall average of all. The data was filtered to obtain only the sex influenced rows (code found in reference 3), we conduct the following hypothesis test testing whether the average mortality rate are the same between races (male and female) or if they do not equal each other. The races given through the data set are: Black (Non-Hispanic), Hispanic, White, American Indian/Alaska Native and Asian/Pacific Islander. We test the hypothesis for each cause of death separately to control the influence on death.
+Race may also have an influence on the mortality rate between coronoary heart disease and stroke. As asked in RQ1, we will test whether there is any difference between a specific race and the overall average of all. The data was filtered to obtain only the sex influenced rows^[```{r, warning = FALSE, echo = FALSE}
+# race_data= data %>% 
+#   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
+#   select(!sex)
+# 
+# race_sum = race_data %>% 
+#   group_by(race, year, type) %>% 
+#   mutate(c = n(),
+#          n = c*100000,
+#     total = sum(data),
+#     mean = mean(data)) %>% 
+#   distinct(total, c,n, mean) %>% 
+#   mutate(p = total/n)
+# race_sum
+```], we conduct the following hypothesis test testing whether the average mortality rate are the same between races (male and female) or if they do not equal each other. The races given through the data set are: Black (Non-Hispanic), Hispanic, White, American Indian/Alaska Native and Asian/Pacific Islander. We test the hypothesis for each cause of death separately to control the influence on death.
 
 ```{r, include = FALSE, warning = FALSE, echo = FALSE}
 race_data= data %>% 
@@ -451,13 +498,13 @@ plot_usmap(data = stroke_map_data_change, values = "avg_change", regions = "stat
 *Nolan can you write analysis summary here*
 
 Stroke Analysis:
-```{r, include = FALSE, warning = FALSE}
+```{r, echo = FALSE, warning = FALSE}
 stroke_analysis = tibble("Characteristic" = c("Age", "Sex", "Race"), "Hypothesis Test" = c("H_a: mu{35-64} != mu{65+}", "H_a: mu{female} != mu{male}", "H_a: mu{all other} > mu{asian}"), "X Mean" = c(20.75, 178.93, 161.72), "Y Mean" = c( 791.88, 179.08, 112.43), "Test Statistic" = c( -293.92, -0.098, 27.92), "P-Value" = c(2.2e-16,0.92, 2.2e-16))
 stroke_analysis
 ```
 
 Coronary Heart Disease Analysis:
-```{r, include = FALSE, warning = FALSE}
+```{r, echo = FALSE, warning = FALSE}
 chd_analysis = tibble("Characteristic" = c("Age", "Sex", "Race"), "Hypothesis Test" = c("H_a: mu{35-64} != mu{65+}", "H_a: mu{female} != mu{male}", "H_a: mu{all other} > mu{black}"), "X Mean" = c(77.73, 330.96, 335.37), "Y Mean" = c( 791.88, 556.32, 399.81), "Test Statistic" = c( -270.64, -57.121, -16.225), "P-Value" = c(2.2e-16,2.2e-16, 2.2e-16))
 chd_analysis
 ```
@@ -554,7 +601,7 @@ In addition, we have the similar questions around the data: whether Asian people
 
 For further analyzing, we can dig deeper into factors affecting one group having higher average chance of getting disease (Stroke and CHD), making regression to predict the pattern of the average proportion of people getting disease in different regions , etc.
 
-In conclusion, we devide our result into 3 categories including Age, Sex, and Race:
+In conclusion, we divide our result into 3 categories including Age, Sex, and Race:
 - Age: There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances). Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
 - Sex:
 - Race:
@@ -563,65 +610,5 @@ In conclusion, we devide our result into 3 categories including Age, Sex, and Ra
 
 # References
 
-Code reference:
-1. 
-```{r, warning = FALSE, echo = FALSE}
-# age_data= data %>% 
-#   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
-#   filter(race == "Overall", (sex == "Overall")) %>% 
-#   select(year, state, county, type, data, age_group)
-# age_data
-# 
-# age_sum = age_data %>% 
-#   group_by(age_group, year, type) %>% 
-#   mutate(c = n(),
-#          n = c*100000,
-#     total = sum(data)) %>% 
-#   distinct(total, c,n) %>% 
-#   mutate(p = total/n) 
-# 
-# pivot_age = age_sum %>% pivot_wider(names_from = type, values_from = c(c, total, n, p)) %>% rename(
-#   n_heart = "n_CHD", 
-#   p_heart = "p_CHD", 
-#   p_stroke = "p_Stroke", 
-#   n_stroke = "n_Stroke",
-#   c_stroke = "c_Stroke", 
-#   c_heart = "c_CHD",
-#   total_stroke = "total_Stroke", 
-#   total_heart = "total_CHD"
-# )
-```
-
-2. 
-```{r, warning = FALSE}
-# sex_data= data %>% 
-#   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
-#   select(!race)
-# sex_data
-# 
-# sex_sum = sex_data %>% 
-#   group_by(sex, year, type) %>% 
-#   mutate(c = n(),
-#          n = c*100000,
-#     total = sum(data)) %>% 
-#   distinct(total, c,n) %>% 
-#   mutate(p = total/n)
-```
 
 
-3. 
-```{r, warning = FALSE, echo = FALSE}
-# race_data= data %>% 
-#   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
-#   select(!sex)
-# 
-# race_sum = race_data %>% 
-#   group_by(race, year, type) %>% 
-#   mutate(c = n(),
-#          n = c*100000,
-#     total = sum(data),
-#     mean = mean(data)) %>% 
-#   distinct(total, c,n, mean) %>% 
-#   mutate(p = total/n)
-# race_sum
-```
