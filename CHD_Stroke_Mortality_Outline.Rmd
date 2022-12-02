@@ -14,7 +14,7 @@ library(tidyverse)
 ## U.S. Coronary Heart Disease and Stroke Mortality Outline
 
 # Introduction
-Some of the leading causes of death in the United States are strokes and heart diseases. Medical data analysis is necessary to study in order to figure out how to better treat patients, which is necessary to save lives. In this project we are analyzing a collection of data about heart disease and stroke deaths in order to analyze roots and causes. This data is sourced directly from the CDC, which in turn is sourced by state governments. Through this analysis we will examine factors including sex, age, race, and state location in order to evaluate how they affect the prevalence of strokes and heart diseases.
+Some of the leading causes of death in the United States are strokes and heart diseases. Medical data analysis is necessary to study in order to figure out how to better treat patients, which is necessary to save lives. In this project we are analyzing a collection of data about heart disease and stroke deaths in order to analyze roots and causes. This data is sourced directly from the CDC, which in turn is sourced by state governments. Research question 1, hereby denoted as R1: How do the factors of sex, age, race, and state location affect the prevalence of coronary heart disease fatalities. Research question 2, hereby denoted as R2: How do the factors of sex, age, race, and state location affect the prevalence of stroke fatalities. 
 
 # Background
 
