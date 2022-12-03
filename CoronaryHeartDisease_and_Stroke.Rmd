@@ -512,6 +512,7 @@ chd_analysis
 
 
 # Discussion
+Filtering Discussion Data to get just CHD and Stroke for whole sample population.
 
 ```{r}
 dis_data = data %>% 
@@ -529,11 +530,11 @@ proportion_stroke = dis_data %>%
 proportion_stroke
 ```
 
-Beside surveying the mean number of people getting CHD and stroke, we can have some more questions about what is exactly the proportion of getting these diseases. In the following observation, we surveyed whether Black (non-Hispanic) people have higher rate of getting CHD and stroke. The average proportion of getting CHD among sample population in recent decades is 0.0035 and the average proportion of getting Stroke is 0.00152. Use a hypothesis test to test if the average proportion of Black (Non-Hispanic) getting CHD and stroke among sample population in recent decades are equal to 0.0035 and 0.00152 respectively versus the alternative that they are different.
+Beside surveying the mean number of people getting CHD and stroke, we can have some more questions about what is exactly the proportion of getting these diseases. In the following observation, we surveyed whether Black (Non-Hispanic) people have higher rate of getting CHD and stroke. The average proportion of getting CHD among sample population in recent decades is 0.0035 and the average proportion of getting Stroke is 0.00152. We used a hypothesis test to test if the average proportion of Black (Non-Hispanic) people getting CHD and stroke among sample population in recent decades are equal to 0.0035 and 0.00152 respectively versus the alternative that they are different.
 
 $$
-H_0: p_{\text{disease of black}}  = p_{\text{disease of all}} \\
-H_a: p_{\text{disease of black}}  > p_{\text{disease of all}}
+H_0: p_{\text{disease of black(Non-Hispanic}}  = p_{\text{disease of all}} \\
+H_a: p_{\text{disease of black(Non-Hispanic}}  > p_{\text{disease of all}}
 $$
 
 ```{r}
@@ -553,19 +554,20 @@ blackstroke_sum=  bl_df %>%
             se = sd / sqrt(n))
 blackstroke_sum
 ```
-> We are 95% confident that the mean proportion of Black (Non-hispanic) people getting stroke would have been between 0.001851512 and 0.002258730.
-> We are 95% confident that the mean proportion of Black (Non-hispanic) people getting CHD would have been between 0.003515034 and 0.004481209.
+> We are 95% confident that the mean proportion of Black (Non-Hispanic) people getting stroke would have been between 0.001851512 and 0.002258730.
+> We are 95% confident that the mean proportion of Black (Non-Hispanic) people getting CHD would have been between 0.003515034 and 0.004481209.
+
 A plot representing the density of proportion of getting these diseases
 
 ```{r}
 ggplot(stroke_df, aes(x = p))+
   geom_density(fill = 'Orange')+
-  ggtitle("Density of the proportion of getting stroke of Black (Non-hispanic) people") +
+  ggtitle("Density of the proportion of getting stroke of Black (Non-Hispanic) people") +
   xlab("Proportion")+
   geom_hline(yintercept = 0)
 ggplot(chd_df, aes(x = p))+
   geom_density(fill = 'Red') +
-  ggtitle("Density of the proportion of getting CHD of Black (Non-hispanic) people")+
+  ggtitle("Density of the proportion of getting CHD of Black (Non-Hispanic) people")+
   xlab("Proportion")+
   geom_hline(yintercept = 0)
 ```
@@ -593,18 +595,17 @@ gt(df = 20)+
   geom_vline(xintercept = tstat_c, linetype = "dashed", colour = 'black')
 ```
 
-> Conclusion: There is very strong evidence (p= 0.022, and p = 1.145968e-05, respectively, one-sided t-test) that the average proportion of Black (Non-hispanic) people has higher chance to get stroke and CHD than those of overall people, which is 0.00152 and 0.0035, respectively.
+
+> In conclusion, we divide our result into 3 categories including Age, Sex, and Race:
+
+- Age: There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances). Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
+- Sex:
+- Race:There is very strong evidence (p= 0.022, and p = 1.145968e-05, respectively, one-sided t-test) that the average proportion of Black (Non-Hispanic) people has higher chance to get stroke and CHD than those of overall people, which is 0.00152 and 0.0035, respectively.
 In addition, we have the similar questions around the data: whether Asian people have higher proportion of getting diseases than the average of the overall, how much are the proportions, whether they are consistent throughout the years, etc. However, our models might be based on fault assumptions:
 - The data collected is biased, not random, so we cannot assume these data is random, and making models for the larger population.
 - The data might not be continuous (There might not be possible the number of people getting disease).
 - The distribution might not be approximately normal.
-
-For further analyzing, we can dig deeper into factors affecting one group having higher average chance of getting disease (Stroke and CHD), making regression to predict the pattern of the average proportion of people getting disease in different regions , etc.
-
-In conclusion, we divide our result into 3 categories including Age, Sex, and Race:
-- Age: There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances). Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
-- Sex:
-- Race:
+- For further analyzing, we can dig deeper into factors affecting one group having higher average chance of getting disease (Stroke and CHD), making regression to predict the pattern of the average proportion of people getting disease in different regions , etc.
 
 
 
