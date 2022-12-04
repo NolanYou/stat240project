@@ -429,7 +429,7 @@ ggplot(race_data, aes(y = data, x = type,  fill = race)) +
 
 ### Geography
 
-... INCLUDE INTRO ...
+To answer R2, we wanted to determine how geographic location had influenced the rates of coronary heart disease and stroke mortality rates over the past 20 years. In order to do so, the stratifications were ignored and the overall data was used, save for the age which was controlled for by only selecting those aged 35-64. The average change in both CHD and stroke mortality rate per county, per state was then graphed to analyze.
 
 ```{r, warning = FALSE, echo = FALSE, warning = FALSE}
 health_data = all_data%>%
@@ -441,7 +441,7 @@ stroke_data = health_data%>%
   filter(topic == "All stroke")
 ```
 
-```{r, include = TRUE, echo = FALSE, warning = FALSE}
+```{r, echo = FALSE, warning = FALSE}
 states = heart_data%>%select(state)%>%unique()%>%pull()
 heart_neutral = heart_data%>%
   filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
@@ -460,12 +460,12 @@ map_data_change = combined_year_data%>%
   summarize(avg_change = mean(diff_20))
 plot_usmap(data = map_data_change, values = "avg_change", regions = "states", include = states) + 
   scale_fill_viridis_c(
-    name = "Average change per county from 1999 to 2019 in the incidence of heart issues", label = scales::comma
-  ) + 
-  theme(panel.background = element_rect(color = "black", fill = "lightblue"))  
+    name = "change in fatality rate per 100,000 people", label = scales::comma
+  ) + labs(title = "Average change per county from 1999 to 2019 in coronary heart disease fatalities by state") + 
+  theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")  
 ```
 
-```{r, include = TRUE, echo = FALSE, warning = FALSE}
+```{r, echo = FALSE, warning = FALSE}
 states = stroke_data%>%select(state)%>%unique()%>%pull()
 stroke_neutral = stroke_data%>%
   filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
@@ -478,18 +478,24 @@ stroke_data_1999 = stroke_neutral%>%
 stroke_combined_year_data = stroke_data_1999%>%right_join(stroke_data_2019, by = "desc")%>%
   select(state = state.x, desc, val_2019 = value.y, val_1999 = value.x)%>%
   mutate(diff_20 = val_2019 - val_1999)
+
 stroke_map_data_change = stroke_combined_year_data%>%
   select(state, diff_20)%>%
   group_by(state)%>%
   summarize(avg_change = mean(diff_20))
 plot_usmap(data = stroke_map_data_change, values = "avg_change", regions = "states", include = states) + 
   scale_fill_viridis_c(
-    name = "Average change per county from 1999 to 2019 in the incidence of stroke issues", label = scales::comma
-  ) + 
-  theme(panel.background = element_rect(color = "black", fill = "lightblue"))  
+    name = "change per county in fatality rate per 100,000", label = scales::comma
+  ) + labs(title = "Average change per county from 1999 to 2019 in stroke fatalities by state") + 
+  theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")  
 ```
 
-#INCLUDE TITLE^^
+
+
+
+There does not appear to be an obvious pattern to either the incidence of stroke fatalities or based on geographic location across the U.S. However it appears same locations that experienced an decrease in fatality rate from strokes had a decrease in coronary heart disease as well. 
+
+
 
 
 
@@ -597,8 +603,7 @@ gt(df = 20)+
 > Conclusion: There is very strong evidence (p= 0.022, and p = 1.145968e-05, respectively, one-sided t-test) that the average proportion of Black (Non-hispanic) people has higher chance to get stroke and CHD than those of overall people, which is 0.00152 and 0.0035, respectively.
 In addition, we have the similar questions around the data: whether Asian people have higher proportion of getting diseases than the average of the overall, how much are the proportions, whether they are consistent throughout the years, etc. However, our models might be based on fault assumptions:
 - The data collected is biased, not random, so we cannot assume these data is random, and making models for the larger population.
-- The data might not be continuous (There might not be possible the number of people getting disease).
-- The distribution might not be approximately normal.
+- The data might not be continuous (there are a discrete number of people getting diseases).
 
 For further analyzing, we can dig deeper into factors affecting one group having higher average chance of getting disease (Stroke and CHD) by having more data about these cases, making regression to predict the pattern of the average proportion of people getting disease in different regions , etc.
 
@@ -613,6 +618,6 @@ In conclusion, we divide our result into 3 categories including Age, Sex, and Ra
 
 
 # References
-
+https://jtr13.github.io/cc19/different-ways-of-plotting-u-s-map-in-r.html
 
 
