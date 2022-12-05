@@ -50,7 +50,9 @@ Our project will use the provided data to examine the relationships between stro
 There are over 5 million rows and 21 columns in the raw data set, but we will be using 677,490 of the given rows, eliminating the rows that contained missing information for the data value column and also only selecting the deaths caused by coronary heart disease or stroke. We will be interested in eight variables, six of which are categorical and two of which are numerical and contain the estimated death rate value and the year data was collected. The four categorical variables are State, County, cardiovascular disease, age range, race, and gender. The state and county will be used to determine the geographical dependencies of the data values, as well as which counties have a higher prevalence. The age range indicates where the data was collected from females and males aged 35 to 64, as well as those aged 65 and older. There are also two categorical variables that contain the data's race and gender. The numeric value represents the death rate per 100,000 people from heart disease, stroke, or heart failure, as specified by the Topic column.
 
 After completing the preliminary research on CHD and stroke, we will analyzing the data set containing mortality rates of these two cause of deaths among the population and answer the following two research questions:
+
 RQ #1: Does age, race, and gender influence stroke and heart disease mortality?
+
 RQ #2: Does geographical location influences the prevalence of these cardiovascular diseases?
 
 
@@ -58,7 +60,7 @@ RQ #2: Does geographical location influences the prevalence of these cardiovascu
 ## Analysis
 ### Age
 
-In order to answer RQ1, we will first discuss the influence age has on the mortality rate. The two age groups obtained from the data set are those aged from 35 - 64 and those aged 65 and older. After filtering the data to obtain only the age influenced rows^[```{r, warning = FALSE, echo = FALSE}
+In order to answer RQ1, we will first discuss the influence age has on the mortality rate. The two age groups obtained from the data set are those aged from 35 - 64 and those aged 65 and older. After filtering the data to obtain only the age influenced rows^[```{r, warning = FALSE}
 # age_data= data %>% 
 #   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
 #   filter(race == "Overall", (sex == "Overall")) %>% 
@@ -123,6 +125,7 @@ ggplot(age_sum, aes(x = year, y = p, color = type, scale= TRUE))+
   xlab("Year")
 
 ```
+
 **Coronary Heart Disease Hypothesis Tests:**
 
 - We will assume that there is a universal parameters $\mu_{\text{35-64}}$ and $\mu_{\text{65+}}$  representing the mean of mortality due to coronary heart disease  per year under the experimental conditions aged 35 - 64 and those aged 65 and older, respectively. 
@@ -197,7 +200,7 @@ ggplot(age_data, aes(y = data, x = type,  fill = age_group)) +
 
 ### Sex
 
-We will also look at the influence sex has on each cause of death and their corresponding mortality rate to asnwer RQ1. The data was filtered to obtain only the sex influenced rows^[```{r, echo = FALSE, warning = FALSE}
+We will also look at the influence sex has on each cause of death and their corresponding mortality rate to asnwer RQ1. The data was filtered to obtain only the sex influenced rows^[```{r, warning = FALSE}
 # sex_data= data %>% 
 #   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
 #   select(!race)
@@ -311,7 +314,7 @@ ggplot(sex_data, aes(y = data, x = type,  fill = sex)) +
 
 ### Race
 
-Race may also have an influence on the mortality rate between coronoary heart disease and stroke. As asked in RQ1, we will test whether there is any difference between a specific race and the overall average of all. The data was filtered to obtain only the sex influenced rows^[```{r, warning = FALSE, echo = FALSE}
+Race may also have an influence on the mortality rate between coronoary heart disease and stroke. As asked in RQ1, we will test whether there is any difference between a specific race and the overall average of all. The data was filtered to obtain only the sex influenced rows^[```{r, warning = FALSE}
 # race_data= data %>% 
 #   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
 #   select(!sex)
@@ -429,9 +432,61 @@ ggplot(race_data, aes(y = data, x = type,  fill = race)) +
 
 ### Geography
 
-To answer R2, we wanted to determine how geographic location had influenced the rates of coronary heart disease and stroke mortality rates over the past 20 years. In order to do so, the stratifications were ignored and the overall data was used, save for the age which was controlled for by only selecting those aged 35-64. The average change in both CHD and stroke mortality rate per county, per state was then graphed to analyze.
+To answer RQ2, we wanted to determine how geographic location had influenced the rates of coronary heart disease and stroke mortality rates over the past 20 years. In order to do so, the stratification were ignored and the overall data was used, save for the age which was controlled for by only selecting those aged 35-64^[```{r, warning = FALSE}
+# health_data = all_data%>%
+#   select("year" = Year, "state" = LocationAbbr, "desc" = LocationDesc, "topic" = Topic, age = Stratification1, race = Stratification2, sex = Stratification3, value = Data_Value, class = Class)
+# 
+# heart_data = health_data%>%
+#   filter(topic == "All heart disease")
+# stroke_data = health_data%>%
+#   filter(topic == "All stroke")
+``` ]. The average change in both CHD and stroke mortality rate per county, per state was then graphed using an imported USA map tool^[https://jtr13.github.io/cc19/different-ways-of-plotting-u-s-map-in-r.html] to analyze the data^[```{r, warning = FALSE} 
+# states = heart_data%>%select(state)%>%unique()%>%pull()
+# heart_neutral = heart_data%>%
+#    filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
+#  data_2019 = heart_neutral%>%
+#    filter(year == 2019)%>%
+#    select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+#  data_1999 = heart_neutral%>%
+#    filter(year == 1999)%>%
+#    select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+#  combined_year_data = data_1999%>%right_join(data_2019, by = "desc")%>%
+#    select(state = state.x, desc, val_2019 = value.y, val_1999 = value.x)%>%
+#    mutate(diff_20 = val_2019 - val_1999)
+#  map_data_change = combined_year_data%>%
+#    select(state, diff_20)%>%
+#    group_by(state)%>%
+#    summarize(avg_change = mean(diff_20))
+#  plot_usmap(data = map_data_change, values = "avg_change", regions = "states", include = states) +
+#    scale_fill_viridis_c(
+#      name = "Change in Fatality Rate per 100,000 People", label = scales::comma
+#    ) + labs(title = "Average Change per County from 1999 to 2019 in Coronary Heart Disease Fatalities by State") +
+#    theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")
+# states = stroke_data%>%select(state)%>%unique()%>%pull()
+# stroke_neutral = stroke_data%>%
+#   filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
+# stroke_data_2019 = stroke_neutral%>%
+#   filter(year == 2019)%>%
+#   select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+# stroke_data_1999 = stroke_neutral%>%
+#   filter(year == 1999)%>%
+#   select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+# stroke_combined_year_data = stroke_data_1999%>%right_join(stroke_data_2019, by = "desc")%>%
+#   select(state = state.x, desc, val_2019 = value.y, val_1999 = value.x)%>%
+#   mutate(diff_20 = val_2019 - val_1999)
+# 
+# stroke_map_data_change = stroke_combined_year_data%>%
+#   select(state, diff_20)%>%
+#   group_by(state)%>%
+#   summarize(avg_change = mean(diff_20))
+# plot_usmap(data = stroke_map_data_change, values = "avg_change", regions = "states", include = states) +
+#   scale_fill_viridis_c(
+#     name = "Change per County in Fatality Rate per 100,000", label = scales::comma
+#   ) + labs(title = "Average Change per County from 1999 to 2019 in Stroke Fatalities by State") +
+#   theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")
+```].
 
-```{r, warning = FALSE, echo = FALSE, warning = FALSE}
+```{r, warning = FALSE, echo = FALSE}
 health_data = all_data%>%
   select("year" = Year, "state" = LocationAbbr, "desc" = LocationDesc, "topic" = Topic, age = Stratification1, race = Stratification2, sex = Stratification3, value = Data_Value, class = Class)
 
@@ -444,25 +499,25 @@ stroke_data = health_data%>%
 ```{r, echo = FALSE, warning = FALSE}
 states = heart_data%>%select(state)%>%unique()%>%pull()
 heart_neutral = heart_data%>%
-  filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
-data_2019 = heart_neutral%>%
-  filter(year == 2019)%>%
-  select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
-data_1999 = heart_neutral%>%
-  filter(year == 1999)%>%
-  select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
-combined_year_data = data_1999%>%right_join(data_2019, by = "desc")%>%
-  select(state = state.x, desc, val_2019 = value.y, val_1999 = value.x)%>%
-  mutate(diff_20 = val_2019 - val_1999)
-map_data_change = combined_year_data%>%
-  select(state, diff_20)%>%
-  group_by(state)%>%
-  summarize(avg_change = mean(diff_20))
-plot_usmap(data = map_data_change, values = "avg_change", regions = "states", include = states) + 
-  scale_fill_viridis_c(
-    name = "change in fatality rate per 100,000 people", label = scales::comma
-  ) + labs(title = "Average change per county from 1999 to 2019 in coronary heart disease fatalities by state") + 
-  theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")  
+   filter(age == "Ages 35-64 years" & race == "Overall" & sex == "Overall")
+ data_2019 = heart_neutral%>%
+   filter(year == 2019)%>%
+   select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+ data_1999 = heart_neutral%>%
+   filter(year == 1999)%>%
+   select("state", "desc", "value")%>%unique()%>% drop_na() %>% group_by(state, desc) %>% summarize(value)
+ combined_year_data = data_1999%>%right_join(data_2019, by = "desc")%>%
+   select(state = state.x, desc, val_2019 = value.y, val_1999 = value.x)%>%
+   mutate(diff_20 = val_2019 - val_1999)
+ map_data_change = combined_year_data%>%
+   select(state, diff_20)%>%
+   group_by(state)%>%
+   summarize(avg_change = mean(diff_20))
+ plot_usmap(data = map_data_change, values = "avg_change", regions = "states", include = states) +
+   scale_fill_viridis_c(
+     name = "Change in Fatality Rate per 100,000 People", label = scales::comma
+   ) + labs(title = "Average Change per County from 1999 to 2019 in Coronary Heart Disease Fatalities by State") +
+   theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")
 ```
 
 ```{r, echo = FALSE, warning = FALSE}
@@ -483,17 +538,13 @@ stroke_map_data_change = stroke_combined_year_data%>%
   select(state, diff_20)%>%
   group_by(state)%>%
   summarize(avg_change = mean(diff_20))
-plot_usmap(data = stroke_map_data_change, values = "avg_change", regions = "states", include = states) + 
+plot_usmap(data = stroke_map_data_change, values = "avg_change", regions = "states", include = states) +
   scale_fill_viridis_c(
-    name = "change per county in fatality rate per 100,000", label = scales::comma
-  ) + labs(title = "Average change per county from 1999 to 2019 in stroke fatalities by state") + 
-  theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")  
+    name = "Change per County in Fatality Rate per 100,000", label = scales::comma
+  ) + labs(title = "Average Change per County from 1999 to 2019 in Stroke Fatalities by State") +
+  theme(panel.background = element_rect(color = "black", fill = "lightblue"), legend.position = "right")
 ```
-
-
-
-
-There does not appear to be an obvious pattern to either the incidence of stroke fatalities or based on geographic location across the U.S. However it appears same locations that experienced an decrease in fatality rate from strokes had a decrease in coronary heart disease as well. 
+Based on these graphs, there does not appear to be an obvious pattern to either the incidence of stroke fatalities or based on geographic location across the U.S. However it appears same locations that experienced an decrease in fatality rate from strokes had a decrease in coronary heart disease as well. 
 
 
 
@@ -526,7 +577,7 @@ chd_analysis
 
 # Discussion
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 dis_data = data %>% 
   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
   group_by(year,type, sex, race) %>% 
@@ -617,4 +668,6 @@ For further analyzing, we can dig deeper into factors affecting one group having
 
 
 # References
+
+
 
