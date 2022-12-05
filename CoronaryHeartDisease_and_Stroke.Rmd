@@ -585,18 +585,12 @@ Based on our data analysis, we can say it is quite likely that age, race and sex
 This is because there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older. Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older. There is very strong evidence that the mean mortality rate of women who died from coronary heart disease is smaller than the mean of the mortality rate of men from heart disease. Also, there is not evidence to conclude that the mean mortality rate from stroke is different between men and women. There is strong statistically evidence that the mean mortality rate of Non-Hispanic Black people is disproportionately higher than the average of all other races. There is a difference between the racial groups, and we can see that by its low p value and extreme test statistic. Also, there is strong evidence that the mean mortality rate of Asians is disproportionately lower than the average mortality rate of all other races. There is a difference between the racial groups, and we can see that by its low p value and extreme test statistic. 
 
 
-There are some shortcomings in our project. First, we are not able to create a generalization for the entire U.S. because certain states are not included in the data, which could be solved if we had data from every U.S. state. Additionally, we may have drawn conclusions predicated on faulty assumptions. For example, such as the reporting of who dies from a CHD or a stroke might actually be biased and non-indicative of the overall parent population of everyone, not random, so we cannot assume that the data is random. Additionally, our data is continuous while there is a discrete number of people dying from diseases, meaning some rounding has to be done.
+There are three shortcomings in our project. First, we are not able to create a generalization for the entire U.S. because certain states are not included in the data, which could be solved if we had data from every U.S. state. Additionally, we may have drawn conclusions predicated on faulty assumptions. For example, such as the reporting of who dies from a CHD or a stroke might actually be biased and non-indicative of the overall parent population of everyone, not random, so we cannot assume that the data is random. Additionally, our data is continuous while there is a discrete number of people dying from diseases, meaning some rounding has to be done.
 
-We would benefit greatly from having full medical records, because there may be other factors influencing CHD, and we could expand our research question more. Some of those other factors we could look at include if the person smokes, prediagnosed conditions, and whether or not that disease is hereditary. 
-
-One further idea that was not completely researched in this paper was how these factors changed over time, which could be futher researched as well.
-
-A different method to address how age, race, gender and geographic location  would be to pool global data, along with controlling for factors that were not controlled in this project, like economic status.
+Additionally, another research question that could have been investigated further using this data set in conjunction with another is how these mortality rates compare to factors such as smoking, obesity rate, and others. In essence, the study would seek another variable that would be associated with the change in CHD and stroke mortality rates over time and refine our understanding of the cause of death. In order to properly depict and draw conclusions from this data, we would need to collect another data set, such as a full medical record or similar, on these factors that is controlled by the same variables. This could have greatly benefited the expansion of our research questions by including history of smoking, prediagnosed conditions, or whether or not that disease is hereditary. 
 
 
 
 
 # References
-
-
 
