@@ -197,7 +197,7 @@ y = age_data %>% filter(type == "CHD" & age_group != "Ages 35-64 years") %>% pul
 age_chd_test = t.test(x, y)
 age_chd_test
 ```
-There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is smaller than the mean of the mortality rate of those aged 65 and older from heart disease (t-stat = -270.64 on 13037 df, $p = 2.2e-16$, two-sided t-test, unequal variances).
+There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is not equal than the mean of the mortality rate of those aged 65 and older from heart disease (t-stat = -270.64 on 13037 df, $p = 2.2e-16$, two-sided t-test, unequal variances).
 
 
 **Stroke Hypothesis Tests:**
@@ -227,7 +227,7 @@ xy = age_data %>% filter(type == "Stroke" & age_group != "Ages 35-64 years") %>%
 age_stroke_test = t.test(x, y)
 age_stroke_test
 ```
-There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is smaller than the mean of the mortality rate of those aged 65 and older from heart disease (t-stat = -293.92 on 12741 df, $p = 2.2e-16$, two-sided t-test, unequal variances).
+There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is not equal to than the mean of the mortality rate of those aged 65 and older from heart disease (t-stat = -293.92 on 12741 df, $p = 2.2e-16$, two-sided t-test, unequal variances).
 
 **Age Influence on Heart Disease vs. Stroke:**
 
