@@ -8,7 +8,7 @@ Group Number: 317B
 
 Group Member: Elli Houtakker, Nolan You, Logan Begin, Thong Nguyen, Sharvil Dave
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 library(tidyverse)
 library(lubridate)
@@ -19,12 +19,12 @@ source("../scripts/viridis.R")
 source("../scripts/ggprob.R")
 ```
 
-```{r, include = FALSE}
+```{r, include = FALSE, warning = FALSE}
 all_data = read_csv("data.csv")
 ```
 
 
-```{r, include = FALSE}
+```{r, include = FALSE, warning = FALSE}
 ##Cleaning Data
 data = all_data %>%
   select(Year,LocationAbbr, LocationDesc, Topic, Data_Value, Stratification1, Stratification2, Stratification3) %>%
@@ -38,7 +38,7 @@ data = all_data %>%
 
 ## Introduction
 
-Strokes and heart disease are among the leading causes of death in the United States. Medical data analysis is required for research in order to figure out how to better treat patients, which is required to save lives. In this project, we are analyzing a collection of data on heart disease and stroke deaths in order to identify their roots and causes. This information is obtained directly from the CDC, which obtains it from state governments. Through this analysis, we will look at factors like sex, age, and race to see if there is a link between those factors and the occurrence of heart disease and stroke. We believe that sex, age, and race are related to strokes and heart attacks. We believe there is an association between sex, age, and race and stroke and heart disease mortality rates.
+Strokes and heart disease are among the leading causes of death in the United States. Medical data analysis is required for research in order to figure out how to better treat patients, which is required to save lives. In this project, we are analyzing a collection of data on heart disease and stroke deaths in order to identify their roots and causes. This information is obtained directly from the CDC, which obtains it from state governments. Through this analysis, we will look at factors demographic information, like sex, age, and race, to find associations between those variables and the occurrence of heart disease and stroke. We believe that sex, age, and race are related to strokes and heart attacks. We believe there is an association between sex, age, and race and stroke and heart disease mortality rates.
 
 
 ## Background
@@ -133,7 +133,7 @@ ggplot(age_sum, aes(x = year, y = p, color = type, scale= TRUE))+
   geom_smooth(se= FALSE)+
   facet_wrap(~age_group)+
   theme_minimal()+
-  ggtitle("Mortality Rate of CHD and Stroke by Age", subtitle = "1999-2019")+
+  ggtitle("Age 35-64 vs. 65+ Mortality Rate of CHD and Stroke", subtitle = "1999 to 2019")+
   ylab("Proportion of Mortality by Disease per 100,000 population")+
   xlab("Year")+
   theme(axis.title.y = element_text(size = 9)) +
@@ -155,8 +155,8 @@ Using the data shown above, we will now run the following hypothesis test. This 
 
 Model:
 
-$X_i \sim F_1(\mu_{\text{35-64}}, \sigma_{\text{35-64}}), \quad i = 1, \ldots, n_1$    
-$Y_i \sim F_2(\mu_{\text{65+}}, \sigma_{\text{65+}}), \quad i = 1, \ldots, n_2$   
+$X_i \sim N(\mu_{\text{35-64}}, \sigma_{\text{35-64}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim N(\mu_{\text{65+}}, \sigma_{\text{65+}}), \quad i = 1, \ldots, n_2$   
 
 Hypotheses:
 
@@ -185,8 +185,8 @@ There is very strong evidence that the mean mortality rate of those aged 35 to 6
 
 Model:
 
-$X_i \sim F_1(\mu_{\text{35-64}}, \sigma_{\text{35-64}}), \quad i = 1, \ldots, n_1$    
-$Y_i \sim F_2(\mu_{\text{65+}}, \sigma_{\text{65+}}), \quad i = 1, \ldots, n_2$   
+$X_i \sim N(\mu_{\text{35-64}}, \sigma_{\text{35-64}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim N(\mu_{\text{65+}}, \sigma_{\text{65+}}), \quad i = 1, \ldots, n_2$   
 
 Hypotheses:
 
@@ -271,8 +271,6 @@ This hypothesis test will determine whether the average mortality rate is the sa
 **Coronary Heart Disease Hypothesis Tests:**
 
 
-
-
 - We will assume that there is a universal parameters $\mu_{\text{female}}$ and $\mu_{\text{male}}$  representing the mean of female and male mortality due to coronary heart disease per year, respectively. 
 - Assume that all trials are independent
 - Assume the distribution of the mean of mortality due to coronary heart disease is approximately normal
@@ -280,8 +278,8 @@ This hypothesis test will determine whether the average mortality rate is the sa
 
 Model:
 
-$X_i \sim F_1(\mu_{\text{female}}, \sigma_{\text{female}}), \quad i = 1, \ldots, n_1$    
-$Y_i \sim F_2(\mu_{\text{male}}, \sigma_{\text{male}}), \quad i = 1, \ldots, n_2$   
+$X_i \sim N(\mu_{\text{female}}, \sigma_{\text{female}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim N(\mu_{\text{male}}, \sigma_{\text{male}}), \quad i = 1, \ldots, n_2$   
 
 Hypotheses:
 
@@ -308,8 +306,8 @@ There is very strong evidence that the mean mortality rate of women who died fro
 
 Model:
 
-$X_i \sim F_1(\mu_{\text{female}}, \sigma_{\text{female}}), \quad i = 1, \ldots, n_1$    
-$Y_i \sim F_2(\mu_{\text{male}}, \sigma_{\text{male}}), \quad i = 1, \ldots, n_2$   
+$X_i \sim N(\mu_{\text{female}}, \sigma_{\text{female}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim N(\mu_{\text{male}}, \sigma_{\text{male}}), \quad i = 1, \ldots, n_2$   
 
 Hypotheses:
 
@@ -345,7 +343,7 @@ ggplot(sex_data, aes(y = data, x = type,  fill = sex)) +
 
 ### RQ3 - Race
 
-The mortality rate from coronary heart disease and stroke may also be affected by race. To answer RQ3, we will see if there is a difference between a specific race and the overall average of all races. We will remove the rows that were not associated with a change in race; in particular, we removed the rows with the race value "Overall" because these rows are used to analyze other categories when race is not a factor^[```{r, warning = FALSE}
+The mortality rate from coronary heart disease and stroke may also be affected by race. To answer RQ3, we will see if there is a difference between a specific race and the overall average of all races. We will remove the rows that were not associated with a change in race; in particular, we removed the rows with the race value "Overall" because these rows are used to analyze other categories when race is not a factor^[```{r, warning = FALSE, include = FALSE}
 # race_data= data %>% 
 #   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
 #   select(!sex)
@@ -404,8 +402,8 @@ These two hypothesis tests will be used to determine whether the average mortali
 
 Model:
 
-$X_i \sim F_1(\mu_{\text{all other}}, \sigma_{\text{all other}}), \quad i = 1, \ldots, n_1$    
-$Y_i \sim F_2(\mu_{\text{black}}, \sigma_{\text{black}}), \quad i = 1, \ldots, n_2$   
+$X_i \sim N(\mu_{\text{all other}}, \sigma_{\text{all other}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim N(\mu_{\text{black}}, \sigma_{\text{black}}), \quad i = 1, \ldots, n_2$   
 
 Hypotheses:
 
@@ -433,8 +431,8 @@ There is strong statistically evidence that the mean mortality rate of Non-Hispa
 
 Model:
 
-$X_i \sim F_1(\mu_{\text{all other}}, \sigma_{\text{all other}}), \quad i = 1, \ldots, n_1$    
-$Y_i \sim F_2(\mu_{\text{asian}}, \sigma_{\text{asian}}), \quad i = 1, \ldots, n_2$   
+$X_i \sim N(\mu_{\text{all other}}, \sigma_{\text{all other}}), \quad i = 1, \ldots, n_1$    
+$Y_i \sim N(\mu_{\text{asian}}, \sigma_{\text{asian}}), \quad i = 1, \ldots, n_2$   
 
 Hypotheses:
 
