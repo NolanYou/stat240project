@@ -73,9 +73,7 @@ Following the completion of preliminary research on CHD and stroke, we will anal
 
 ## Analysis
 
-### RQ1 - Age
-
-In our calculations, we assume that the data is well sampled, and thus the sample data should be normally distributed due to the central limit theorem because n > 30. However, it is clear that the sample itself is not quite normal, meaning that some assumptions of a normal distribution are violated slightly. This is further touched on in the discussion section.
+In our calculations, we assume that the data is well sampled, and thus the sample data should be normally distributed due to the central limit theorem because n > 30. However, it is clear from the following graphs that the sample itself is not quite normal, meaning that some assumptions of a normal distribution are violated slightly. This is further touched on in the discussion section.
 
 ```{r,  warning = FALSE, echo = FALSE}
 data%>%filter(type == "Stroke" & race == "Overall" & sex == "Overall" & age_group == "Ages 35-64 years")%>%
@@ -86,15 +84,9 @@ data%>%filter(type == "Stroke" & race == "Overall" & sex == "Overall" & age_grou
 data%>%filter(type == "CHD" & race == "Overall" & sex == "Overall" & age_group == "Ages 35-64 years")%>%
   ggplot(aes(x = data)) + geom_histogram(bins = 30) + 
   labs(title = "Histogram of overall CHD mortality rate vs number of counties", subtitle = " for 35-64 year olds per 100,000", x = "Mortality rate", y = "Count of counties")
-
-data%>%filter(type == "Stroke" & race == "Overall" & sex == "Overall" & age_group == "Ages 65 years and older")%>%
-  ggplot(aes(x = data)) + geom_histogram(bins = 30) +
-  labs(title = "Histogram of overall stroke mortality rate vs number of counties", subtitle = "for 65+ year olds per 100,000", x = "Mortality rate", y = "Count of counties")
-
-data%>%filter(type == "CHD" & race == "Overall" & sex == "Overall" & age_group == "Ages 65 years and older")%>%
-  ggplot(aes(x = data)) + geom_histogram(bins = 30) +
-  labs(title = "Histogram of overall CHD mortality rate vs number of counties", subtitle = "for 65+ year olds per 100,000", x = "Mortality rate", y = "Count of counties")
 ```
+
+### RQ1 - Age
 
 
 To begin, we will examine the impact of age on the mortality rate for both stroke and CHD. The data set yielded two age groups: those aged 35 to 64 and those aged 65 and older. We will remove the rows that were not associated with a change in age; in particular, we removed the rows with the value "Overall" for age because these rows are used for analysis of other categories when age is not a factor. We obtain 51,300 rows as a result of this filtration^[```{r, warning = FALSE}
@@ -413,12 +405,12 @@ ggplot(race_sum, aes(x = year, y = mean, color = type, scale= TRUE))+
 
 #### Hypothesis Tests: 
 
-These two hypothesis tests will be used to determine whether the average mortality rate is the same between races (male and female) or if they do not equal each other. The following races are represented in the data set: Black (non-Hispanic), Hispanic, White, American Indian/Alaska Native, and Asian/Pacific Islander. To control the influence on death, we test the hypothesis for each cause of death separately. We will keep the same assumptions as above that are defined under the central limit theorem.
+These two hypothesis tests will be used to determine whether the average CHD mortality rate is the same between black and all others races or if the average stroke mortality rate is the same between asians and all other races, or if they do not equal each other. The following races are represented in the data set: Black (non-Hispanic), Hispanic, White, American Indian/Alaska Native, and Asian/Pacific Islander. To control the influence on death, we test the hypothesis for each cause of death separately. We will keep the same assumptions as above that are defined under the central limit theorem.
 
 **Coronary Heart Disease Hypothesis Tests:**
 
 
-- We will assume that there is a universal parameters $\mu_{\text{all other}}$ and $\mu_{\text{black}}$ representing the mean mortality due to coronary heart disease per year over all races, sex, and age, and the mean mortality due to coronary heart disease of Asians/Pacific Islanders, respectively. 
+- We will assume that there is a universal parameters $\mu_{\text{all other}}$ and $\mu_{\text{black}}$ representing the mean mortality due to coronary heart disease per year over all races, sex, and age, and the mean mortality due to coronary heart disease of non-Hispanic black people, respectively. 
 - Assume that all trials are independent.
 
 Model:
@@ -447,7 +439,7 @@ There is strong statistically evidence that the mean CHD mortality rate of Non-H
 
 **Stroke Hypothesis Tests:**
 
-- We will assume that there is a universal parameters $\mu_{\text{all other}}$ and $\mu_{\text{asian}}$ representing the mean mortality due to stroke per year over all races, sex, and age, and the mean mortality due to stroke of Blacks(non Hispanics), respectively. 
+- We will assume that there is a universal parameters $\mu_{\text{all other}}$ and $\mu_{\text{asian}}$ representing the mean mortality due to stroke per year over all races, sex, and age, and the mean mortality due to stroke of Asians respectively. 
 - Assume that all trials are independent.
 
 Model:
@@ -525,27 +517,13 @@ In conclusion, we can divide our result into 3 categories including Age, Sex, an
 
 - **Sex:**There is very strong evidence that the mean mortality rate of women who died from coronary heart disease is smaller than the mean of the mortality rate of men from heart disease (t-stat = -57.121 on 43777 df, $p = 2.2e-16$, two-sided t-test, unequal variances, extreme test statistic). Also, there is not statistically strong evidence to conclude that the mean mortality rate from stroke is different between men and women.(t-stat = - 0.098442 on 49733 df, p = 0.9216, two-sided t-test, test statistic close to 0).
 
-- **Race:** There is strong statistically evidence that the mean mortality rate of Non-Hispanic Black people is disproportionately higher than the average of all other races. There is a difference between the groups, and we can see that by its low p value(t-stat = -16.225 on 21573 df, p-value = 2.2e-16, two sided t-test) and extreme test statistic. Also, there is strong evidence that the mean mortality rate of Asians is disproportionately lower than the average mortality rate of all other races. There is a difference between the groups, and we can see that by its low p value(t-stat = 27.923 on 9800.6 df, p-value = 2.2e-16, two sided t-test) and extreme test statistic.
-
-
-**Stroke Analysis:**
-```{r, echo = FALSE, warning = FALSE}
-stroke_analysis = tibble("Characteristic" = c("Age", "Sex", "Race"), "Hypothesis Test" = c("H_a: mu{35-64} != mu{65+}", "H_a: mu{female} != mu{male}", "H_a: mu{all other} > mu{asian}"), "X Mean" = c(20.75, 178.93, 161.72), "Y Mean" = c( 791.88, 179.08, 112.43), "Test Statistic" = c( -293.92, -0.098, 27.92), "P-Value" = c(2.2e-16,0.92, 2.2e-16))
-stroke_analysis
-```
-
-**Coronary Heart Disease Analysis:**
-```{r, echo = FALSE, warning = FALSE}
-chd_analysis = tibble("Characteristic" = c("Age", "Sex", "Race"), "Hypothesis Test" = c("H_a: mu{35-64} != mu{65+}", "H_a: mu{female} != mu{male}", "H_a: mu{all other} > mu{black}"), "X Mean" = c(77.73, 330.96, 335.37), "Y Mean" = c( 791.88, 556.32, 399.81), "Test Statistic" = c( -270.64, -57.121, -16.225), "P-Value" = c(2.2e-16,2.2e-16, 2.2e-16))
-chd_analysis
-```
-
+- **Race:** There is strong statistically evidence that the mean CHD mortality rate of Non-Hispanic Black people is disproportionately higher than the average of all other races. There is a difference between the groups, and we can see that by its low p value(t-stat = -16.225 on 21573 df, p-value = 2.2e-16, two sided t-test) and extreme test statistic. Also, there is strong evidence that the mean stroke mortality rate of Asians is disproportionately lower than the average mortality rate of all other races. There is a difference between the groups, and we can see that by its low p value(t-stat = 27.923 on 9800.6 df, p-value = 2.2e-16, two sided t-test) and extreme test statistic.
 
 
 # Discussion
 
 
-Based on our data analysis, we can say that the factors of age, race and sex are each associated with CHD and stroke mortality rate. This is because there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older. Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older. There is very strong evidence that the mean mortality rate of women who died from coronary heart disease is smaller than the mean of the mortality rate of men from heart disease. Also, there is not evidence to conclude that the mean mortality rate from stroke is different between men and women. There is strong statistically evidence that the mean mortality rate of Non-Hispanic Black people is disproportionately higher than the average of all other races. There is a difference between the racial groups, and we can see that by its low p value and extreme test statistic. Also, there is strong evidence that the mean mortality rate of Asians is disproportionately lower than the average mortality rate of all other races. There is a difference between the racial groups, and we can see that by its low p value and extreme test statistic. 
+Based on our data analysis, we can say that the factors of age, race and sex are each associated with CHD and stroke mortality rate. This is because there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older. Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older. There is very strong evidence that the mean mortality rate of women who died from coronary heart disease is smaller than the mean of the mortality rate of men from heart disease. Also, there is not evidence to conclude that the mean mortality rate from stroke is different between men and women. There is strong statistically evidence that the mean CHD mortality rate of Non-Hispanic Black people is disproportionately higher than the average of all other races. There is a difference between the racial groups, and we can see that by its low p value and extreme test statistic. Also, there is strong evidence that the mean stroke mortality rate of Asians is disproportionately lower than the average stroke mortality rate of all other races. There is a difference between the racial groups, and we can see that by its low p value and extreme test statistic. 
 
 
 There are two shortcomings in our project. First, we are not able to create a generalization for the entire U.S. because certain states are not included in the data, which could be solved if we had data from every U.S. state. Additionally, we may have drawn conclusions predicated on faulty assumptions. For example, such as the reporting of who dies from a CHD or a stroke might actually be biased and non-indicative of the overall parent population of everyone, not random, so we cannot assume that the data is random. This is seen in our exploration of RQ1, which shows that despite our assuming that the data conforms to the Central Limit Theorem because N > 30, it does not. Therefore there must be a non-sampling bias in our data, which in order to be rectified would need to have the CDC implement better sampling procedures and have the analysis re-ran on that data set.  
