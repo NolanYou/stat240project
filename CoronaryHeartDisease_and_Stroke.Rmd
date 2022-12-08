@@ -4,6 +4,10 @@ output: html_document
 date: "2022-11-02"
 ---
 
+Group Number: 317B
+
+Group Member: Elli Houtakker, Nolan You, Logan Begin, Thong Nguyen, Sharvil Dave
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 library(tidyverse)
@@ -48,30 +52,29 @@ Our project will examine the relationships between stroke and coronary heart dis
 
 
 
-The raw data set contains over 5 million rows and 21 columns, but we will only use 677,490 of them, excluding rows with missing information for the data value column and only selecting deaths caused by coronary heart disease (CHD) or stroke^[```{r, include = FALSE}
-##Cleaning Data
+The raw data set contains over 5 million rows and 21 columns, but we will only use 677,490 of them, excluding rows with missing information for the data value column and only selecting deaths caused by coronary heart disease (CHD) or stroke^[```{r, warning = FALSE}
+# Cleaning Data
 # data = all_data %>% 
 #   select(Year,LocationAbbr, LocationDesc, Topic, Data_Value, Stratification1, Stratification2, Stratification3) %>% 
 #   rename(year = Year, state = LocationAbbr, county = LocationDesc, age_group = Stratification1, data = Data_Value, type = Topic, race = Stratification2, sex = Stratification3) %>% 
 #   filter(!is.na(data)) %>% 
 #   arrange(year) %>% 
 #   mutate( type = recode(type, "Coronary heart disease (CHD)" = "CHD", "All stroke" = "Stroke"))
-
 ```]. We will be interested in six variables when analyzing the data at the county level, four of which are categorical and two of which are numerical. The two numerical columns are the year the data was collected and the mortality rate, which is the proportion of the country's population of 100,000 people who died from the specified cardiovascular diseases—stroke and CHD in this case. Mortality type, age range, race, and sex are the four categorical variables. We are looking at stroke and coronary heart disease mortality rates. The age range denotes the age range in which the data was collected from females and males aged 35 to 64, as well as those aged 65 and older. In addition, the patient's race and sex are categorical variables. According to the Topic column, the numeric value represents the death rate per 100,000 people from heart disease, stroke, or heart failure.
 
 Following the completion of preliminary research on CHD and stroke, we will analyze the data set containing mortality rates for these two causes of death in the population to answer the following two research questions:
 
-RQ #1: Does age influence stroke and coronary heart disease mortality rate or its prevalence?
+**RQ #1:** Does age influence stroke and coronary heart disease mortality rate or its prevalence?
 
-RQ #2: Does race influence stroke and coronary heart disease mortality rate or its prevalence?
+**RQ #2:** Does race influence stroke and coronary heart disease mortality rate or its prevalence?
 
-RQ #3: Does sex influence stroke and coronary heart disease mortality rate or its prevalence?
+**RQ #3: **Does sex influence stroke and coronary heart disease mortality rate or its prevalence?
 
 
 ## Analysis
-### Age
+### RQ1 - Age
 
-In order to answer RQ1, we will first discuss the influence age has on the mortality rate. The two age groups obtained from the data set are those aged from 35 - 64 and those aged 65 and older. After filtering the data to obtain only the age influenced rows^[```{r, warning = FALSE}
+To begin, we will examine the impact of age on the mortality rate for both stroke and CHD. The data set yielded two age groups: those aged 35 to 64 and those aged 65 and older. We will remove the rows that were not associated with a change in age; in particular, we removed the rows with the value "Overall" for age because these rows are used for analysis of other categories when age is not a factor. We obtain 51,300 rows as a result of this filtration^[```{r, warning = FALSE}
 # age_data= data %>% 
 #   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
 #   filter(race == "Overall", (sex == "Overall")) %>% 
@@ -96,14 +99,13 @@ In order to answer RQ1, we will first discuss the influence age has on the morta
 #   total_stroke = "total_Stroke", 
 #   total_heart = "total_CHD"
 # )
-```], we conduct the following hypothesis test testing whether the average mortality rate are the same between the two age groups or if they do not equal each other. We test the hypothesis for each cause of death separately to control the influence on death.
+```]. The graph below depicts this data set and shows the drastic change in proportion for both CHD and stroke deaths between both age groups, despite the fact that CHD has a higher proportion overall.
 
 ```{r, include = FALSE, warning = FALSE, echo = FALSE}
 age_data= data %>% 
   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease") %>% 
   filter(race == "Overall", (sex == "Overall")) %>% 
   select(year, state, county, type, data, age_group)
-age_data
 
 age_sum = age_data %>% 
   group_by(age_group, year, type) %>% 
@@ -130,17 +132,25 @@ ggplot(age_sum, aes(x = year, y = p, color = type, scale= TRUE))+
   geom_point()+
   geom_smooth(se= FALSE)+
   facet_wrap(~age_group)+
-  theme_bw()+
-  ggtitle("Scatter Plot of Mortality Rate by Age", subtitle = "grouped by Cardiovascular type")+
-  ylab("Mortality Proportion of Population")+
-  xlab("Year")
+  theme_minimal()+
+  ggtitle("Mortality Rate of CHD and Stroke by Age", subtitle = "1999-2019")+
+  ylab("Proportion of Mortality by Disease per 100,000 population")+
+  xlab("Year")+
+  theme(axis.title.y = element_text(size = 9)) +
+  theme(axis.title.x = element_text(size = 12)) 
+
 
 ```
+
+
+#### Hypothesis Tests:
+
+Using the data shown above, we will now run the following hypothesis test. This test will determine whether the average morality rate for all counties, races, and genders in the age group of 35 to 64 is equal to or not equal to the average morality rate for those aged 65 and older under the same conditions. To control the influence on death and compare the two causes of death, we will test the hypothesis separately for each cause of death, stroke and CHD. Based on the central limit theorem, we will assume that the mean distribution is approximately normal for each of the hypothesis tests. The central limit theorem assumes that as sample size increases to infinity, the exact probability distribution of a sample mean converges to a normal distribution.
 
 **Coronary Heart Disease Hypothesis Tests:**
 
 - We will assume that there is a universal parameters $\mu_{\text{35-64}}$ and $\mu_{\text{65+}}$  representing the mean of mortality due to coronary heart disease  per year under the experimental conditions aged 35 - 64 and those aged 65 and older, respectively. 
-- Assume the distribution of the mean of mortality due to coronary heart disease is approximately normal (We are interested in the sampling distribution of the sample)
+- Assume the distribution of the mean of mortality due to coronary heart disease is approximately normal
 - Assume that all trials are independent.
 
 Model:
@@ -170,7 +180,7 @@ There is very strong evidence that the mean mortality rate of those aged 35 to 6
 **Stroke Hypothesis Tests:**
 
 - We will assume that there is a universal parameters $\mu_{\text{35-64}}$ and $\mu_{\text{65+}}$  representing the mean of mortality due to stroke per year under the experimental conditions aged 35 - 64 and those aged 65 and older, respectively. 
-- Assume the distribution of the mean of mortality due to stroke is approximately normal (We are interested in the sampling distribution of the sample)
+- Assume the distribution of the mean of mortality due to stroke is approximately normal
 - Assume that all trials are independent.
 
 Model:
@@ -203,15 +213,15 @@ We will now compare the difference in mortality rate per 100,000 population betw
 ```{r, warning = FALSE, echo = FALSE}
 ggplot(age_data, aes(y = data, x = type,  fill = age_group)) +
   geom_boxplot()+
-  ggtitle("CHD and Stroke Mortality Rate by Age Boxplot")+
+  ggtitle("CHD and Stroke Mortality by Age")+
   xlab("Cause of Death")+
   ylab("Mortality per 100,000 population")
 ```
 
 
-### Sex
+### RQ2 - Sex
 
-To address RQ2, we will look at the influence sex has on each cause of death and their corresponding mortality rate to asnwer RQ1. The data was filtered to obtain only the sex influenced rows^[```{r, warning = FALSE}
+To address RQ2, we will evaluated the effect of sex on mortality rates for each cause of death, stroke and CHD, and see if the associations are similar between the two. We will remove the rows that were not associated with a change in sex; specifically, we removed the rows with the sex value "Overall" because these rows are used for analyzing other categories when sex is not a factor. As a result of this filtration^[```{r, warning = FALSE}
 # sex_data= data %>% 
 #   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
 #   select(!race)
@@ -224,13 +234,13 @@ To address RQ2, we will look at the influence sex has on each cause of death and
 #     total = sum(data)) %>% 
 #   distinct(total, c,n) %>% 
 #   mutate(p = total/n)
-```], we conduct the following hypothesis test testing whether the average mortality rate are the same between the two sexes (male and female) or if they do not equal each other. We test the hypothesis for each cause of death separately to control the influence on death.
+```], we get 99,557 rows, which are represented by the graph below. These two scatter plots show that CHD is a more common cause of death than stroke and that there is a significant difference between men and women from 1999 to 2021. Meanwhile, strokes kill nearly the same number of men and women across the data set. We will put these observations to the test further with the hypothesis test that follows.
+
 
 ```{r, include = FALSE, warning = FALSE}
 sex_data= data %>% 
   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race == "Overall", sex != "Overall") %>% 
   select(!race)
-sex_data
 
 sex_sum = sex_data %>% 
   group_by(sex, year, type) %>% 
@@ -246,17 +256,27 @@ ggplot(sex_sum, aes(x = year, y = p, color = type, scale= TRUE))+
   geom_point()+
   geom_smooth(se= FALSE)+
   facet_wrap(~sex)+
-  theme_bw()+
-  ggtitle("Scatter Plot of Mortality Rate by Sex", subtitle = "grouped by Cardiovascular type")+
-   ylab("Mortality Proportion of Population")+
-  xlab("Year")
+  theme_minimal()+
+  ggtitle("Mortality Rate of CHD and Stroke by Sex", subtitle = "1999-2019")+
+  ylab("Proportion of Mortality by Disease per 100,000 population")+
+  xlab("Year")+
+  theme(axis.title.y = element_text(size = 9)) +
+  theme(axis.title.x = element_text(size = 12)) 
 ```
 
 
+#### Hypothesis Tests:
+This hypothesis test will determine whether the average mortality rate is the same for both sexes (male and female) or if they differ. To control the influence on death, we test the hypothesis for each cause of death separately. The assumptions are similar to the tests done in the first steps, under the same condition of the central limit theorem.
+
 **Coronary Heart Disease Hypothesis Tests:**
 
+
+
+
 - We will assume that there is a universal parameters $\mu_{\text{female}}$ and $\mu_{\text{male}}$  representing the mean of female and male mortality due to coronary heart disease per year, respectively. 
-- Assume that all trials are independent.
+- Assume that all trials are independent
+- Assume the distribution of the mean of mortality due to coronary heart disease is approximately normal
+
 
 Model:
 
@@ -317,15 +337,15 @@ The difference in mortality rate per 100,000 population between the two deaths b
 ```{r, warning = FALSE, echo = FALSE}
 ggplot(sex_data, aes(y = data, x = type,  fill = sex)) +
   geom_boxplot()+
-  ggtitle("CHD and Stroke Mortality by Sex Boxplot")+
+  ggtitle("CHD and Stroke Mortality by Sex")+
   xlab("Cause of Death")+
-  ylab("Mortality rate per 100,000")
+  ylab("Mortality per 100,000 Population")
 ```
 
 
-### Race
+### RQ3 - Race
 
-Race may also have an influence on the mortality rate between coronary heart disease and stroke. In order to answer RQ3, we will test whether there is any difference between a specific race and the overall average of all. The data was filtered to obtain only the sex influenced rows^[```{r, warning = FALSE}
+The mortality rate from coronary heart disease and stroke may also be affected by race. To answer RQ3, we will see if there is a difference between a specific race and the overall average of all races. We will remove the rows that were not associated with a change in race; in particular, we removed the rows with the race value "Overall" because these rows are used to analyze other categories when race is not a factor^[```{r, warning = FALSE}
 # race_data= data %>% 
 #   filter(type != "Heart failure" & type != 	"Cardiovascular disease (CVD)" & type != "All heart disease", race != "Overall", sex == "Overall") %>% 
 #   select(!sex)
@@ -339,7 +359,7 @@ Race may also have an influence on the mortality rate between coronary heart dis
 #   distinct(total, c,n, mean) %>% 
 #   mutate(p = total/n)
 # race_sum
-```], we conduct the following hypothesis test testing whether the average mortality rate are the same between races (male and female) or if they do not equal each other. The races given through the data set are: Black (Non-Hispanic), Hispanic, White, American Indian/Alaska Native and Asian/Pacific Islander. We test the hypothesis for each cause of death separately to control the influence on death.
+```]. As a result, this graph set contains 120,145 rows. The red dashed line represents the average mortality rate across all races. This indicates how far each race differs from the overall average if race was not a factor.
 
 ```{r, include = FALSE, warning = FALSE, echo = FALSE}
 race_data= data %>% 
@@ -363,14 +383,21 @@ ggplot(race_sum, aes(x = year, y = mean, color = type, scale= TRUE))+
   geom_point()+
   geom_smooth(se= FALSE)+
   facet_wrap(~race)+
-  theme_bw()+
+  theme_minimal()+
   geom_hline(yintercept =mean, linetype = "dashed", color = "red")+
-  ggtitle("Scatter Plot of Mortality Rate by Race", subtitle = "grouped by Cardiovascular type")+
-  ylab("Mortality Proportion of population")+
-  xlab("Year")
+  ggtitle("Average Mortality of CHD and Stroke by Race", subtitle = "1999-2019")+
+  ylab("Average Mortality per 100,000 population")+
+  xlab("Year")+
+  theme(axis.title.y = element_text(size = 9)) +
+  theme(axis.title.x = element_text(size = 12)) 
 ```
 
+#### Hypothesis Tests: 
+
+These two hypothesis tests will be used to determine whether the average mortality rate is the same between races (male and female) or if they do not equal each other. The following races are represented in the data set: Black (non-Hispanic), Hispanic, White, American Indian/Alaska Native, and Asian/Pacific Islander. To control the influence on death, we test the hypothesis for each cause of death separately. We will keep the same assumptions as above that are defined under the central limit theorem.
+
 **Coronary Heart Disease Hypothesis Tests:**
+
 
 - We will assume that there is a universal parameters $\mu_{\text{all other}}$ and $\mu_{\text{black}}$ representing the mean mortality due to coronary heart disease per year over all races, sex, and age, and the mean mortality due to coronary heart disease of Asians/Pacific Islanders, respectively. 
 - Assume that all trials are independent.
@@ -436,58 +463,58 @@ Overall, there seems to be trend between the higher influence of race in those w
 ```{r, warning = FALSE, echo = FALSE}
 ggplot(race_data, aes(y = data, x = type,  fill = race)) +
   geom_boxplot()+
-  ggtitle("CHD and Stroke by Race Boxplot")+
+  ggtitle("CHD and Stroke Mortality by Race")+
   xlab("Cause of Death") +
-  ylab("Mortality rate per 100,000")
+  ylab("Mortality per 100,000")
 ```
 
 ```{r, warning = FALSE, echo = FALSE}
-age_data2 = age_data %>% group_by(year, age_group, type) %>% 
-  summarize(data = sum(data)/n())
-race_data2 = race_data %>% group_by(year, race, type) %>% 
-  summarize(data = sum(data)/n())
-sex_data2 = sex_data %>% group_by(year, sex, type) %>% 
-  summarize(data = sum(data)/n())
-ggplot()+
-  geom_smooth(data = age_data2, aes(x = year, y = data), color = "red", se = FALSE)+
-  geom_smooth(data = race_data2, aes(x = year, y = data), color = "black", se = FALSE)+
-  geom_smooth(data = sex_data2, aes(x = year, y = data), color = "purple", se = FALSE)+
-  facet_grid(~type)+
-  ggtitle("Fitted Line for CHD")+
-  xlab("Years")+
-  ylab("Average Mortality Rate")
-ggplot()+
-  geom_density(data = age_data2, aes( x = data), fill = "red", alpha = 0.5)+
-  geom_density(data = race_data2, aes(x = data), fill = "black", alpha = 0.5)+
-  geom_density(data = sex_data2, aes( x = data), fill = "purple",alpha = 0.5)+
-  facet_grid(~type)+
-  ggtitle("Density Plot for CHD")+
-  xlab("Average Mortality Rate")+
-  ylab("Density")
+# age_data2 = age_data %>% group_by(year, age_group, type) %>% 
+#   summarize(data = sum(data)/n())
+# race_data2 = race_data %>% group_by(year, race, type) %>% 
+#   summarize(data = sum(data)/n())
+# sex_data2 = sex_data %>% group_by(year, sex, type) %>% 
+#   summarize(data = sum(data)/n())
+# ggplot()+
+#   geom_smooth(data = age_data2, aes(x = year, y = data), color = "red", se = FALSE)+
+#   geom_smooth(data = race_data2, aes(x = year, y = data), color = "black", se = FALSE)+
+#   geom_smooth(data = sex_data2, aes(x = year, y = data), color = "purple", se = FALSE)+
+#   facet_grid(~type)+
+#   ggtitle("Fitted Line for CHD")+
+#   xlab("Years")+
+#   ylab("Average Mortality Rate")
+# ggplot()+
+#   geom_density(data = age_data2, aes( x = data), fill = "red", alpha = 0.5)+
+#   geom_density(data = race_data2, aes(x = data), fill = "black", alpha = 0.5)+
+#   geom_density(data = sex_data2, aes( x = data), fill = "purple",alpha = 0.5)+
+#   facet_grid(~type)+
+#   ggtitle("Density Plot for CHD")+
+#   xlab("Average Mortality Rate")+
+#   ylab("Density")
 
 ```
 
 
 
 
-## Analysis Summary
+### Analysis Summary
 
 In conclusion, we can divide our result into 3 categories including Age, Sex, and Race:
 
-- Age: There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances). Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
+- **Age:** There is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from coronary heart disease is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances). Also, there is very strong evidence that the mean mortality rate of those aged 35 to 64 who died from stroke is different from the mean of the mortality rate of those aged 65 and older from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances).
 
-- Sex: There is very strong evidence that the mean mortality rate of women who died from coronary heart disease is smaller than the mean of the mortality rate of men from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances, extreme test statistic). Also, there is not evidence to conclude that the mean mortality rate from stroke is different between men and women.(High p value, two-sided t-test, test statistic close to 0).
+- **Sex:**There is very strong evidence that the mean mortality rate of women who died from coronary heart disease is smaller than the mean of the mortality rate of men from heart disease ($p = 2.2e-16$, two-sided t-test, unequal variances, extreme test statistic). Also, there is not evidence to conclude that the mean mortality rate from stroke is different between men and women.(High p value, two-sided t-test, test statistic close to 0).
 
-- Race: There is strong statistically evidence that the mean mortality rate of Non-Hispanic Black people is disproportionately higher than the average of all other races. There is a difference between the groups, and we can see that by its low p value(p-value = 2.2e-16, two sided t-test) and extreme test statistic. Also, there is strong evidence that the mean mortality rate of Asians is disproportionately lower than the average mortality rate of all other races. There is a difference between the groups, and we can see that by its low p value(p-value = 2.2e-16, two sided t-test) and extreme test statistic.
+- **Race:** There is strong statistically evidence that the mean mortality rate of Non-Hispanic Black people is disproportionately higher than the average of all other races. There is a difference between the groups, and we can see that by its low p value(p-value = 2.2e-16, two sided t-test) and extreme test statistic. Also, there is strong evidence that the mean mortality rate of Asians is disproportionately lower than the average mortality rate of all other races. There is a difference between the groups, and we can see that by its low p value(p-value = 2.2e-16, two sided t-test) and extreme test statistic.
 
 
-Stroke Analysis:
+**Stroke Analysis:**
 ```{r, echo = FALSE, warning = FALSE}
 stroke_analysis = tibble("Characteristic" = c("Age", "Sex", "Race"), "Hypothesis Test" = c("H_a: mu{35-64} != mu{65+}", "H_a: mu{female} != mu{male}", "H_a: mu{all other} > mu{asian}"), "X Mean" = c(20.75, 178.93, 161.72), "Y Mean" = c( 791.88, 179.08, 112.43), "Test Statistic" = c( -293.92, -0.098, 27.92), "P-Value" = c(2.2e-16,0.92, 2.2e-16))
 stroke_analysis
 ```
 
-Coronary Heart Disease Analysis:
+**Coronary Heart Disease Analysis:**
 ```{r, echo = FALSE, warning = FALSE}
 chd_analysis = tibble("Characteristic" = c("Age", "Sex", "Race"), "Hypothesis Test" = c("H_a: mu{35-64} != mu{65+}", "H_a: mu{female} != mu{male}", "H_a: mu{all other} > mu{black}"), "X Mean" = c(77.73, 330.96, 335.37), "Y Mean" = c( 791.88, 556.32, 399.81), "Test Statistic" = c( -270.64, -57.121, -16.225), "P-Value" = c(2.2e-16,2.2e-16, 2.2e-16))
 chd_analysis
@@ -505,8 +532,4 @@ There are three shortcomings in our project. First, we are not able to create a 
 
 Additionally, another research question that could have been investigated further using this data set in conjunction with another is how these mortality rates compare to factors such as smoking, obesity rate, and others. In essence, the study would seek another variable that would be associated with the change in CHD and stroke mortality rates over time and refine our understanding of the cause of death. In order to properly depict and draw conclusions from this data, we would need to collect another data set, such as a full medical record or similar, on these factors that is controlled by the same variables. This could have greatly benefited the expansion of our research questions by including history of smoking, prediagnosed conditions, or whether or not that disease is hereditary. 
 
-
-
-
-# References
 
