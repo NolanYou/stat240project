@@ -77,18 +77,10 @@ In our calculations, we assume that the data is well sampled, and thus the sampl
 
 ```{r,  warning = FALSE, echo = FALSE}
 data%>%
-  filter(type == "Stroke" & race == "Overall" & sex == "Overall" & age_group == "Ages 35-64 years")%>%
-  ggplot(aes(x = data)) +
-  geom_histogram(bins = 30, fill = "lightblue") +
-  labs(title = "Overall Stroke Mortality Rate vs Number of Counties", subtitle = " for 35-64 year olds per 100,000", x = "Mortality Rate", y = "Number of Counties")+  theme_minimal()
-
-
-
-data%>%filter(type == "CHD" & race == "Overall" & sex == "Overall" & age_group == "Ages 35-64 years")%>%
-  ggplot(aes(x = data)) +
-  geom_histogram(bins = 30, fill = "lightblue") + 
-  labs(title = "Overall CHD Mortality Rate vs Number of Counties", subtitle = " for 35-64 year olds per 100,000", x = "Mortality Rate", y = "Number of Counties")+
-  theme_minimal()
+  filter((type == "Stroke" | type == "CHD") &race == "Overall" & sex == "Overall" & age_group == "Ages 35-64 years")%>%
+  ggplot(aes(x = data, fill = type)) +
+  geom_histogram(bins = 30) +
+  labs(title = "Overall Mortality Rate vs Number of Counties", subtitle = " for 35-64 year olds per 100,000", x = "Mortality Rate", y = "Number of Counties")+  theme_minimal()+facet_grid(~type )+theme(legend.position="none")
 ```
 
 ### RQ1 - Age
